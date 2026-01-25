@@ -1,0 +1,9 @@
+# Ignore system files
+.DS_Store
+node_modules/
+
+# Ignore local Markdown Textbook (Track PDF only)
+Cyber_Security_Textbook.md
+
+# Ignore sensitive files (hypothetically)
+.env

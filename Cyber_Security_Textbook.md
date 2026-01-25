@@ -1,5 +1,6 @@
 # The Comprehensive Guide to CTF Competitions
 **Version 2.0 - Academic Edition**
+**Author: Yau Ka Cheung**
 
 ## Table of Contents
 1.  [Chapter 1: Introduction to CTFs & Ethics](#chapter-1-introduction-to-ctfs--ethics)
