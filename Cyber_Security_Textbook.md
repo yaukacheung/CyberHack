@@ -1,4 +1,5 @@
 # The Comprehensive Guide to CTF Competitions
+**Version 2.0 - Academic Edition**
 
 ## Table of Contents
 1.  [Chapter 1: Introduction to CTFs & Ethics](#chapter-1-introduction-to-ctfs--ethics)
@@ -7,10 +8,17 @@
 4.  [Chapter 4: Forensics](#chapter-4-forensics)
 5.  [Chapter 5: Reverse Engineering & Binary Exploitation](#chapter-5-reverse-engineering--binary-exploitation)
 6.  [Chapter 6: Networking & Reconnaissance](#chapter-6-networking--reconnaissance)
+7.  [Glossary](#glossary)
 
 ---
 
 # Chapter 1: Introduction to CTFs & Ethics
+
+## Learning Objectives
+*   Define Capture The Flag (CTF) competitions and their variants.
+*   Distinguish between ethical hacking and cybercrime under legal frameworks (CFAA/CMA).
+*   Apply the principles of Responsible Disclosure (ISO/IEC 29147).
+*   Demonstrate proficiency in basic Linux Command Line Interface (CLI) operations.
 
 ## Core Concepts & Definitions
 **Capture The Flag (CTF)** competitions are cybersecurity exercises where participants solve challenges to find a "flag" (a secret string). They mimic real-world security scenarios in a safe, gamified environment.
@@ -38,8 +46,9 @@ Hacking is rarely done with a mouse. You must master the keyboard.
     *   `cat [file]`: "Read this file."
 
 ### 1.2 Ethics: The Golden Rules
+Hacking without permission is illegal and unethical.
 1.  **Ownership:** Do not hack what you do not own.
-2.  **Permission:** Written consent is mandatory for testing others' systems.
+2.  **Permission:** Written consent is mandatory. In the US, unauthorized access is a violation of the **Computer Fraud and Abuse Act (CFAA)**. In the UK, it falls under the **Computer Misuse Act (CMA)**.
 3.  **Privacy:** Respect the data you encounter.
 
 ### Practice 1.1: The Hidden File
@@ -74,7 +83,7 @@ Never hack from your host OS (Windows/Mac). Use a **Virtual Machine (VM)** like 
 2.  Enter password: `toor` (It won't show on screen!).
 3.  Once logged in, run `whoami` to verify identity.
 
-**Challenge Question 2:** You are trying to SSH into a server but get a "Connection Refused" error. What are two possible reasons?
+**Challenge Question 2:** You are trying to SSH into a server but get a "Connection Refused" error. What are two possible reasons? (1. SSH service is down/not running. 2. Firewall blocking port 22).
 
 ---
 
@@ -88,11 +97,14 @@ A hacker who can't script is limited by their tools.
 *   **Python:** The hacker's Swiss Army Knife.
     *   Libraries like `requests` (Web) and `pwntools` (Binary) are essential.
 
-### 3.2 Advanced Ethics: Disclosure
-**Responsible Disclosure:**
-*   You find a Critical SQL Injection in a bank's website.
-*   **Do:** Find their "Bug Bounty" program or `security.txt` file. Report details encrypted.
-*   **Don't:** Tweet about it. Dump the database. Demand money (Extortion).
+### 3.2 Advanced Ethics: Responsible Disclosure
+When a vulnerability is discovered, how should it be handled?
+*   **ISO/IEC 29147:** The international standard for vulnerability disclosure.
+*   **Process:**
+    1.  Verify the vulnerability (Proof of Concept).
+    2.  Identify the vendor's reporting mechanism (`security.txt`, Bug Bounty).
+    3.  Report securely (Encrypted).
+    4.  Allow reasonable time for remediation before public disclosure.
 
 ### Practice 3.1: The Port Sweeper
 **Scenario:** You need to check if 5 servers are alive.
@@ -101,20 +113,31 @@ A hacker who can't script is limited by their tools.
 
 **Challenge Question 3:** Write a Python one-liner to print "Hack the Planet" 100 times.
 
+## Key Takeaways
+*   CTFs provide a legal playground for skill development.
+*   The CLI is the primary tool for interaction.
+*   Ethics distinguish professionals from criminals; always adhere to the RoE and legal frameworks (CFAA/CMA).
+
 ---
 
 # Chapter 2: Cryptography
+
+## Learning Objectives
+*   Differentiate between Encoding, Encryption, and Hashing.
+*   Analyze the weaknesses of historical ciphers.
+*   Apply XOR operations and identify its properties.
+*   Explain the RSA algorithm and common implementation flaws.
 
 ## Core Concepts & Definitions
 **Cryptography** is the science of secure communication. In CTFs, you are often the *cryptanalyst*, trying to break the code.
 
 **Key Terminology:**
-*   **Plaintext:** The original message.
-*   **Ciphertext:** The scrambled message.
-*   **Key:** The secret password used to encrypt/decrypt.
+*   **Plaintext:** The original message ($M$ or $P$).
+*   **Ciphertext:** The scrambled message ($C$).
+*   **Key:** The secret password used to encrypt/decrypt ($K$).
 *   **Encoding:** Changing data format (e.g., Base64). No key needed.
 *   **Encryption:** Scrambling data for secrecy. Key needed.
-*   **Hashing:** One-way fingerprint of data.
+*   **Hashing:** One-way fingerprint of data. Standards defined in **NIST FIPS 180-4**.
 
 ---
 
@@ -124,13 +147,13 @@ A hacker who can't script is limited by their tools.
 ### 1.1 Historical Ciphers
 These rely on "Security by Obscurity."
 *   **Caesar Cipher:** Shifts every letter by $N$.
-    *   Example: `HELLO` + Shift 1 -> `IFMMP`.
-*   **Substitution Cipher:** Replaces letters with symbols/other letters.
+    *   Math: $E_n(x) = (x + n) \pmod{26}$.
+*   **Substitution Cipher:** Replaces letters with symbols/other letters based on a key alphabet.
 
 ### 1.2 Basic Encoding
-*   **Base64:** The most common encoding.
-    *   *Characteristic:* `A-Z, a-z, 0-9, +, /`. Often ends in `=`.
-    *   *Usage:* Transmitting binary data as text.
+*   **Base64:** The most common encoding (RFC 4648).
+    *   *Characteristic:* `A-Z, a-z, 0-9, +, /`. Often ends in padding `=`.
+    *   *Usage:* Transmitting binary data as text (e.g., in Email attachments).
 
 ### Practice 1.1: The Caesar Box
 **Scenario:** You find a note: `Uryyb Jbeyq`.
@@ -139,7 +162,7 @@ These rely on "Security by Obscurity."
 3.  Click "Decrypt" (Brute-force all shifts).
 4.  Shift 13 gives: `Hello World` (This is ROT13).
 
-**Challenge Question 1:** A string contains only numbers and letters A-F. What encoding is this likely to be?
+**Challenge Question 1:** A string contains only numbers and letters A-F. What encoding is this likely to be? (Hexadecimal).
 
 ---
 
@@ -148,13 +171,13 @@ These rely on "Security by Obscurity."
 
 ### 2.1 The Magic of XOR ($\oplus$)
 Exclusive OR is the foundation of modern crypto.
-*   **Logic:** If bits are different -> 1. If same -> 0.
-*   **Reversible:** `A XOR B = C` implies `C XOR B = A`.
+*   **Logic:** $0 \oplus 0 = 0$, $0 \oplus 1 = 1$, $1 \oplus 0 = 1$, $1 \oplus 1 = 0$.
+*   **Property:** $(A \oplus B) \oplus B = A$. It is its own inverse.
+*   **One-Time Pad (OTP):** Theoretically unbreakable if the key is truly random and length of message.
 
 ### 2.2 Modern Symmetric: AES
-**Advanced Encryption Standard (AES)** is the global standard.
-*   **Key Sizes:** 128, 192, 256 bits.
-*   **Weakness:** Implementing **ECB Mode** (Electronic Codebook) leaves patterns visible.
+**Advanced Encryption Standard (AES)** is the global standard (NIST FIPS 197).
+*   **Weakness:** **ECB Mode** (Electronic Codebook). It encrypts identical plaintext blocks into identical ciphertext blocks, failing to provide **diffusion**.
 
 ### Practice 2.1: The Onion
 **Scenario:** A string is encoded like this: `Base64(Hex(Rot13("Flag")))`.
@@ -168,7 +191,7 @@ Exclusive OR is the foundation of modern crypto.
     *   *Correction:* Base64 -> `4d61666463626364` -> Hex -> `Mafdcbcd` -> Rot13 -> `Znsqpopq`...
     *   *Actual String:* `ZmxhZw==` -> Base64 -> `flag`.
 
-**Challenge Question 2:** If you XOR a file with itself, what is the result?
+**Challenge Question 2:** If you XOR a file with itself, what is the result? (All zeros).
 
 ---
 
@@ -177,15 +200,17 @@ Exclusive OR is the foundation of modern crypto.
 
 ### 3.1 RSA Mathematics
 RSA is asymmetric (Public Key + Private Key).
-*   $N = p \times q$ (Public Modulus, where p/q are prime).
-*   $C = M^e \pmod N$ (Encryption).
-*   $M = C^d \pmod N$ (Decryption).
-*   **The Attack:** Calculate $p$ and $q$ by factoring $N$. Once you have $p/q$, you can calculate $d$ (Private Key).
+*   $N = p \times q$ (Modulus).
+*   $\phi(N) = (p-1)(q-1)$ (Euler's Totient).
+*   $e$: Public Exponent (usually 65537).
+*   $d$: Private Exponent (Modular Multiplicative Inverse). $d \equiv e^{-1} \pmod{\phi(N)}$.
+*   **Encryption:** $C \equiv M^e \pmod N$.
+*   **Decryption:** $M \equiv C^d \pmod N$.
 
 ### 3.2 Hashing Collisions
 Hashes are unique... theoretically.
-*   **MD5 Collision:** Two different files having the exact same MD5 hash.
-*   **Tool:** `hashclash`.
+*   **MD5 Collision:** Two different files having the exact same MD5 hash. Historically broken.
+*   **Password Hashing:** Reference **NIST SP 800-132**. Do not use MD5/SHA1. Use slow hashes like **PBKDF2**, **Bcrypt**, or **Argon2** to resist brute-force.
 
 ### Practice 3.1: Cracking Weak RSA
 **Scenario:** You are given $N=33$, $e=7$.
@@ -198,17 +223,28 @@ Hashes are unique... theoretically.
 
 **Challenge Question 3:** Why is it dangerous to use the same modulus $N$ with different public exponents $e$ for two different users? (Hint: Common Modulus Attack).
 
+## Key Takeaways
+*   Encodings are readable; Encryption is secure.
+*   XOR is the building block of stream ciphers.
+*   RSA security relies on the difficulty of Integer Factorization.
+
 ---
 
 # Chapter 3: Web Exploitation
 
+## Learning Objectives
+*   Identify the components of the HTTP request/response cycle.
+*   Analyze and exploit SQL Injection vulnerabilities.
+*   Distinguish between Reflected and Stored XSS.
+*   Write scripts to automate blind attacks.
+
 ## Core Concepts & Definitions
 **Web Exploitation** involves finding and leveraging vulnerabilities in web applications to access unauthorized data or functionality.
+*   **OWASP Top 10:** The standard awareness document for web security.
 
 **Key Terminology:**
 *   **Client-Side:** Code running in the browser (HTML, CSS, JavaScript).
 *   **Server-Side:** Code running on the server (PHP, Python, SQL).
-*   **Request/Response:** The conversation between Client and Server.
 *   **Injection:** Inserting malicious data that the system interprets as code.
 
 ---
@@ -216,12 +252,10 @@ Hashes are unique... theoretically.
 ## Level 1: Fundamentals
 **Goal:** Understand how websites work and see what others miss.
 
-### 1.1 HTML Source & DevTools
-The browser tells you everything.
-*   **View Source:** Right-click -> View Page Source. Shows the raw HTML.
-    *   *Look for:* Comments `<!-- TODO: Fix login -->`, hidden inputs.
-*   **Inspect Element:** Shows the live DOM (Document Object Model).
-    *   *Usage:* Changing `type="password"` to `type="text"` to see your typing.
+### 1.1 HTTP Protocol
+Defined by **RFC 7230** family.
+*   **Stateless:** Each request is independent. Cookies are used to maintain sessions.
+*   **Methods:** GET (retrieve), POST (submit), PUT, DELETE.
 
 ### 1.2 The URL Structure
 `http://example.com/search?q=apple&cat=fruit`
@@ -237,12 +271,12 @@ The browser tells you everything.
 3.  Double-click "disabled" and delete it.
 4.  Click the button.
 
-**Challenge Question 1:** What HTTP header identifies your browser and OS to the server? (Commonly `Mozilla/5.0...`)
+**Challenge Question 1:** What HTTP header identifies your browser and OS to the server? (Commonly `User-Agent`).
 
 ---
 
 ## Level 2: Intermediate
-**Goal:** Perform manual injection attacks (OWASP Top 10).
+**Goal:** Perform manual injection attacks.
 
 ### 2.1 SQL Injection (SQLi) - Union Based
 Code: `SELECT * FROM users WHERE name = '$input';`
@@ -253,7 +287,7 @@ Code: `SELECT * FROM users WHERE name = '$input';`
 ### 2.2 Cross-Site Scripting (Reflected XSS)
 *   **Concept:** The server echoes your input back to the page without sanitizing it.
 *   **Payload:** `<script>alert('XSS')</script>`
-*   **Impact:** Stealing session cookies (`document.cookie`).
+*   **Impact:** Stealing session cookies (`document.cookie`) leading to Session Hijacking.
 
 ### Practice 2.1: The Admin Login
 **Scenario:** A login form.
@@ -261,7 +295,7 @@ Code: `SELECT * FROM users WHERE name = '$input';`
 2.  Password: (Empty)
 3.  **Result:** You are logged in as admin because the query became `SELECT * FROM users WHERE user = 'admin' -- ...` AND the password check was commented out.
 
-**Challenge Question 2:** In SQL injection, what specific command is used to confirm the number of columns in the current table? (`ORDER BY`)
+**Challenge Question 2:** In SQL injection, what specific command is used to confirm the number of columns in the current table? (`ORDER BY`).
 
 ---
 
@@ -270,11 +304,8 @@ Code: `SELECT * FROM users WHERE name = '$input';`
 
 ### 3.1 Blind SQL Injection
 The server *doesn't* show errors or data. it only returns "Yes" (200 OK) or "No" (404/Empty).
+*   **Time-Based:** `id=1; SLEEP(10) --`. If the page pauses for 10 seconds, it's vulnerable.
 *   **Boolean-Based:** Ask true/false questions.
-    *   `id=1 AND (SELECT substring(pass,1,1) FROM users) = 'a'`
-    *   If page loads -> First letter is 'a'.
-    *   If page fails -> First letter is NOT 'a'.
-*   **Automation:** This is too slow to do by hand. Write a Python script!
 
 ### 3.2 Command Injection (RCE)
 Exploiting `system()` calls.
@@ -300,16 +331,27 @@ print(pin)
 
 **Challenge Question 3:** What tool in Burp Suite allows you to forcefully send thousands of slightly different requests to brute-force a login? (Intruder).
 
+## Key Takeaways
+*   Input Validation is the primary defense against Injection.
+*   The browser is an untrusted client; anything sent by it can be modified.
+*   Automation is required for Blind SQLi and Bruteforcing.
+
 ---
 
 # Chapter 4: Forensics
 
+## Learning Objectives
+*   Identify file types using Magic Bytes (Signatures).
+*   Analyze network traffic using the OSI Reference Model.
+*   Perform deep file analysis (Carving/Steganography).
+
 ## Core Concepts & Definitions
-**Digital Forensics** is the investigation and recovery of material found in digital devices. In CTFs, this usually means extracting a hidden flag from a file (image, audio, memory dump, or network capture).
+**Digital Forensics** is the investigation and recovery of material found in digital devices.
+*   **Locard's Exchange Principle:** "Every contact leaves a trace."
 
 **Key Terminology:**
 *   **Metadata:** Data about data (e.g., GPS location of a photo).
-*   **Header (Magic Bytes):** The unique signature at the start of a file identifying its format.
+*   **Header (Magic Bytes):** The unique signature at the start of a file identifying its format (See **Gary Kessler's File Signature Table**).
 *   **PCAP:** Packet Capture (network traffic recording).
 *   **Steganography:** Hiding a secret validly inside another file.
 
@@ -370,13 +412,14 @@ Files can be glued together.
 **Goal:** Network analysis and Memory forensics.
 
 ### 3.1 Network Forensics (Wireshark)
-Analyzing traffic to reconstruct actions.
-*   **Follow TCP Stream:** Reassembles the conversation between client and server.
-*   **Export Objects:** Extracts files (images, exes) that were downloaded during the capture.
+Analyzing traffic using the **OSI Model**.
+*   **Layer 4 (Transport):** TCP/UDP Ports.
+*   **Layer 7 (Application):** HTTP, FTP.
+*   **Method:** Follow TCP Stream to reconstruct the conversation.
 
 ### 3.2 Memory Volatility
 Analyzing RAM dumps (`.mem` files) to find running processes, clipboard contents, or cmd history.
-*   **Tool:** `volatility`.
+*   **Tool:** `volatility` framework.
 
 ### Practice 3.1: The Intercept
 **Scenario:** `traffic.pcap`. A user downloaded a secret file.
@@ -386,19 +429,29 @@ Analyzing RAM dumps (`.mem` files) to find running processes, clipboard contents
 4.  Go to `File -> Export Objects -> HTTP`.
 5.  Select `secret.pdf` and Save.
 
-**Challenge Question 3:** In Wireshark, what color usually represents TCP retransmissions or bad checksums? (Black/Red)
+**Challenge Question 3:** In Wireshark, what color usually represents TCP retransmissions or bad checksums? (Black/Red, depending on profile).
+
+## Key Takeaways
+*   File Extensions are meaningless; Headers (Magic Bytes) are truth.
+*   Deleted data persists until overwritten.
+*   Network captures serve as a time-machine for attacks.
 
 ---
 
 # Chapter 5: Reverse Engineering & Binary Exploitation
 
+## Learning Objectives
+*   Describe the memory layout of a process (Stack vs Heap).
+*   Analyze code flow using Disassemblers and Decompilers.
+*   Execute Stack Buffer Overflow attacks.
+
 ## Core Concepts & Definitions
-**Reverse Engineering (RevEng)** is the process of deconstructing software to reveal its architecture and logic. **Binary Exploitation (Pwn)** is using that knowledge to make the program do something it wasn't intended to do.
+**Reverse Engineering (RevEng)** is the process of deconstructing software to reveal its architecture and logic (Static Analysis). **Binary Exploitation (Pwn)** is using that knowledge to manipulate execution flow (Dynamic Analysis).
 
 **Key Terminology:**
-*   **Source Code:** Human-readable code (C, Python).
 *   **Binary/Executable:** Machine code (0s and 1s) run by the CPU.
-*   **Assembly (ASM):** Low-level human-readable representation of machine code.
+*   **Assembly (ASM):** Low-level human-readable representation. defined by Architecture (x86, x64, ARM).
+    *   *Reference:* **Intel 64 and IA-32 Architectures Software Developer’s Manual**.
 *   **Decompiler:** Tool to try and turn Binary back into Source Code.
 
 ---
@@ -423,7 +476,7 @@ Before opening a complex tool, always check `strings`.
 3.  You see `Enter PIN:`, `Access Denied`, `Access Granted`, and `8492`.
 4.  Run `./login` and try `8492`. Success!
 
-**Challenge Question 1:** What does the instruction `NOP` (No Operation) do? (It does nothing, just takes up space. Often used for padding).
+**Challenge Question 1:** What does the instruction `NOP` (No Operation, `0x90`) do? (It does nothing, allows execution to slide to the next instruction).
 
 ---
 
@@ -474,19 +527,30 @@ The NSA's open-source reverse engineering suite.
 5.  `EIP` is `0x41414141` (`AAAA`).
 6.  **Conclusion:** You control exactly where the program jumps next.
 
-**Challenge Question 3:** What is "Shellcode"? (A small piece of code used as the payload in an exploit, often spawning a shell).
+**Challenge Question 3:** What is "Shellcode"? (A small pieces of opcode used as the payload in an exploit to spawn a shell).
+
+## Key Takeaways
+*   Reverse Engineering recovers the original design.
+*   Memory safety vulnerabilities (Buffer Overflows) exist because C/C++ do not enforce boundary checks.
+*   Controlling the Instruction Pointer (EIP/RIP) constitutes full control.
 
 ---
 
 # Chapter 6: Networking & Reconnaissance
 
+## Learning Objectives
+*   Interpret IPv4 Addressing and CIDR notation.
+*   Execute Active (Nmap) and Passive (OSINT) reconnaissance.
+*   Establish Reverse and Bind shells using Netcat.
+
 ## Core Concepts & Definitions
-**Networking** is how computers talk. **Reconnaissance** is gathering intelligence before an attack.
+**Networking** is how computers communicate. **Reconnaissance** is gathering intelligence before an attack.
+*   **Protocol:** Rules of communication. **TCP/IP** is the suite of protocols governing the Internet.
 
 **Key Terminology:**
-*   **IP Address:** The logical address of a machine (`192.168.1.1`).
-*   **Port:** An address for a specific service (`80` for Web, `22` for SSH).
-*   **Protocol:** The rules of communication (TCP, UDP, ICMP).
+*   **IP Address:** The logical address of a machine.
+    *   **CIDR:** Classless Inter-Domain Routing (e.g., `/24`).
+*   **Port:** An end-point for a specific service (`80` for Web, `22` for SSH). Defined by **IANA**.
 *   **WHOIS:** A database of domain owners.
 
 ---
@@ -520,7 +584,7 @@ Using public information.
 ### 2.1 Nmap (Network Mapper)
 The gold standard scanner.
 *   **Scan Types:**
-    *   `-sS` (SYN Scan): Stealthy (Step 1 & 2 of handshake).
+    *   `-sS` (SYN Scan): Stealthy. Sends SYN, receives SYN/ACK, sends RST. (See **RFC 793** for TCP State Machine).
     *   `-sV` (Version): "Which Apache version is running?"
     *   `-p-` (All ports): Scan 1-65535.
 
@@ -558,3 +622,22 @@ The "Holy Grail" of hacking.
 3.  Go back to Terminal 1. Type `ls`. You should see the files!
 
 **Challenge Question 3:** What is a "Bind Shell"? (The opposite of Reverse Shell; the victim opens a port and listens, attacker connects to them. Less common due to firewalls blocking incoming ports).
+
+## Key Takeaways
+*   Reconnaissance dictates the success of an attack.
+*   Nmap is the essential tool for active mapping.
+*   Netcat enables raw data transfer and shell access.
+
+---
+
+# Glossary
+*   **CFAA:** Computer Fraud and Abuse Act (US Law).
+*   **CVSS:** Common Vulnerability Scoring System.
+*   **Encode:** To convert data into a new format using a publicly available scheme (e.g., Base64).
+*   **Encrypt:** To scramble data using a secret key (e.g., AES).
+*   **Exploit:** Code/procedure that takes advantage of a vulnerability.
+*   **Hash:** A fixed-length string generated from data.
+*   **OSI Model:** Open Systems Interconnection model (7 Layers).
+*   **Payload:** The part of the exploit code that performs the malicious action (e.g., shellcode).
+*   **Root:** The superuser account on Linux systems.
+*   **Vulnerability:** A weakness in a system that can be exploited.

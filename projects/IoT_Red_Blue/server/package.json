@@ -1,0 +1,14 @@
+{
+  "name": "iot-red-blue-server",
+  "version": "1.0.0",
+  "description": "Vulnerable IoT Server for CTF",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@hapi/hapi": "^21.3.0",
+    "mongoose": "^7.0.0",
+    "joi": "^17.9.0"
+  }
+}
