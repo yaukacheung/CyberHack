@@ -1,60 +1,85 @@
 # Chapter 4: Forensics
 
-## 4.1 Digital Anatomy
-Forensics is about finding the truth hidden in data. It requires understanding how data is structured on disk and in transit.
+## Core Concepts & Definitions
+**Digital Forensics** is the investigation and recovery of material found in digital devices. In CTFs, this usually means extracting a hidden flag from a file (image, audio, memory dump, or network capture).
 
-### File Signatures (Magic Bytes)
-Operating systems rely on extensions (`.jpg`), but tools rely on headers.
-*   **PNG:** `89 50 4E 47 0D 0A 1A 0A`
-*   **JPEG:** `FF D8 FF E0`
-*   **ZIP:** `50 4B 03 04` (PK..)
-*   **PDF:** `25 50 44 46` (%PDF)
+**Key Terminology:**
+*   **Metadata:** Data about data (e.g., GPS location of a photo).
+*   **Header (Magic Bytes):** The unique signature at the start of a file identifying its format.
+*   **PCAP:** Packet Capture (network traffic recording).
+*   **Steganography:** Hiding a secret validly inside another file.
 
-<!-- Placeholder: [Image: file_header_visual.png] - Hex editor view highlighting magic bytes -->
+---
 
-### Corrupted Headers
-A common CTF trick is to corrupt the magic bytes so the file doesn't open.
-*   **Fix:** Open in a Hex Editor (e.g., `hexeditor` or `HxD`) and restore the correct bytes.
+## Level 1: Fundamentals
+**Goal:** Extract visible text and metadata.
 
-## 4.2 Network Forensics (Packet Analysis)
-Analyzing captured network traffic (`.pcap` files).
+### 1.1 The `strings` Command
+Binary files look like garbage in a text editor, but they often contain readable ASCII strings.
+*   **Command:** `strings [filename]`
+*   **Usage:** Finding hardcoded passwords, URLs, or flags.
+*   **Filter:** `strings binary.exe | grep "CTF"`
 
-### The OSI Model
-Understanding layers helps you find flags.
-1.  **Physical** (Cables)
-2.  **Data Link** (MAC addresses)
-3.  **Network** (IP addresses)
-4.  **Transport** (TCP/UDP ports)
-5.  **Session**
-6.  **Presentation** (Encryption/Encoding)
-7.  **Application** (HTTP, FTP, SMTP) -> **Focus Here!**
+### 1.2 Metadata Analysis
+Every file carries baggage.
+*   **ExifTool:** Reads image metadata.
+    *   *Look for:* Comments, Camera Model, GPS Coordinates.
 
-<!-- Placeholder: [Image: osi_model_layers.png] - The 7 layers of the OSI model with relevant CTF protocols -->
+### Practice 1.1: The LOUD Whisper
+**Scenario:** You are given `image.jpg`.
+1.  Run `strings image.jpg`.
+2.  Output is 10,000 lines.
+3.  Refine: `strings image.jpg | grep "CTF"`.
+4.  Found: `CTF{n0th1ng_1s_h1dd3n}`.
 
-### Step-by-Step: Analyzing Traffic with Wireshark
-**Scenario:** You have a `capture.pcap` file.
+**Challenge Question 1:** What command allows you to search for a specific case-insensitive pattern in a text file? (`grep -i`)
 
-1.  **Open:** `wireshark capture.pcap`
-2.  **Protocol Hierarchy:** Go to `Statistics -> Protocol Hierarchy`. This gives a bird's-eye view. Is there HTTP? FTP?
-3.  **Follow Streams:** Right-click a packet -> `Follow -> TCP Stream`. This reconstructs the full conversation. Look for:
-    *   Login credentials (plaintext).
-    *   File transfers.
-4.  **Export Objects:** Go to `File -> Export Objects -> HTTP`. This automatically extracts images, scripts, or zips downloaded during the capture.
+---
 
-## 4.3 Steganography
-The art of hiding secrets in plain sight.
+## Level 2: Intermediate
+**Goal:** Analyze file structures and use Steganography tools.
 
-### LSB (Least Significant Bit)
-Images are made of pixels (RGB). Each color channel is 8 bits (0-255).
-*   Changing the last bit (0000000**1** vs 0000000**0**) changes the color imperceptibly.
-*   Attackers hide binary data in these LSBs.
-*   **Tool:** `zsteg` (for PNG/BMP) instantly reveals LSB data.
+### 2.1 Magic Bytes & Hex Editors
+Trust fingerprints, not extensions.
+*   **Hex Editor:** Tools like `HxD` or `Okteta` show the raw bytes.
+*   **Scenario:** A file named `flag.txt` won't open.
+    *   *Check bytes:* `89 50 4E 47...` -> It's a PNG! Rename it to `.png`.
 
-### Step-by-Step: Extracting Hidden Files with Binwalk
-**Scenario:** You have an image `challenge.jpg` that is unusually large.
+### 2.2 Binwalk
+Files can be glued together.
+*   **Binwalk:** Scans a file for embedded file signatures.
+*   **Command:** `binwalk -e [file]` (Extracts recursively).
 
-1.  **Analyze:** Run `binwalk challenge.jpg`.
-    *   Output: `DECIMAL: 0, DESCRIPTION: JPEG image...`
-    *   Output: `DECIMAL: 45023, DESCRIPTION: Zip archive data...`
-2.  **Extract:** Run `binwalk -e challenge.jpg`.
-3.  **Result:** It creates a `_challenge.jpg.extracted` folder containing the hidden zip file.
+### Practice 2.1: The Matryoshka Doll
+**Scenario:** A large `cat.jpg`.
+1.  Run `binwalk cat.jpg`.
+    *   Result: `Zip archive data, at offset 13050`.
+2.  Run `binwalk -e cat.jpg`.
+3.  Open the extracted folder `_cat.jpg.extracted`.
+4.  Find `flag.txt` inside.
+
+**Challenge Question 2:** What is the standard header (Magic Bytes) for a ZIP file? (`PK` or `50 4B`)
+
+---
+
+## Level 3: Advanced
+**Goal:** Network analysis and Memory forensics.
+
+### 3.1 Network Forensics (Wireshark)
+Analyzing traffic to reconstruct actions.
+*   **Follow TCP Stream:** Reassembles the conversation between client and server.
+*   **Export Objects:** Extracts files (images, exes) that were downloaded during the capture.
+
+### 3.2 Memory Volatility
+Analyzing RAM dumps (`.mem` files) to find running processes, clipboard contents, or cmd history.
+*   **Tool:** `volatility`.
+
+### Practice 3.1: The Intercept
+**Scenario:** `traffic.pcap`. A user downloaded a secret file.
+1.  Open in Wireshark.
+2.  Filter: `http.request.method == GET`.
+3.  See a request for `secret.pdf`.
+4.  Go to `File -> Export Objects -> HTTP`.
+5.  Select `secret.pdf` and Save.
+
+**Challenge Question 3:** In Wireshark, what color usually represents TCP retransmissions or bad checksums? (Black/Red)

@@ -1,63 +1,85 @@
 # Chapter 5: Reverse Engineering & Binary Exploitation
 
-## 5.1 Memory Layout
-To exploit a program, you must know how it lives in memory.
+## Core Concepts & Definitions
+**Reverse Engineering (RevEng)** is the process of deconstructing software to reveal its architecture and logic. **Binary Exploitation (Pwn)** is using that knowledge to make the program do something it wasn't intended to do.
 
-<!-- Placeholder: [Image: stack_memory_layout.png] - Visualization of the stack frame, return address, and buffer overflow direction -->
+**Key Terminology:**
+*   **Source Code:** Human-readable code (C, Python).
+*   **Binary/Executable:** Machine code (0s and 1s) run by the CPU.
+*   **Assembly (ASM):** Low-level human-readable representation of machine code.
+*   **Decompiler:** Tool to try and turn Binary back into Source Code.
 
-1.  **Text Segment:** The actual machine code (Read-Only).
-2.  **Data Segment:** Global variables (initialized).
-3.  **Heap:** Dynamic memory (grows upwards). Used by `malloc()`/`new`.
-4.  **Stack:** Local variables (grows downwards). Used by function calls. **Most common attack surface.**
+---
 
-## 5.2 CPU Registers (x86)
-Registers are super-fast storage locations inside the CPU.
+## Level 1: Fundamentals
+**Goal:** Understand compiled vs interpreted code and find low-hanging fruit.
 
-<!-- Placeholder: [Image: cpu_registers_diagram.png] - Map of common registers (EAX, ESP, EIP) and their roles -->
+### 1.1 `strings` (Again)
+Before opening a complex tool, always check `strings`.
+*   Many beginners "hardcode" passwords or flags directly into the binary.
+*   *Command:* `strings game.exe | grep "password"`
 
-*   **EAX (Accumulator):** Stores return values of functions.
-*   **ESP (Stack Pointer):** Points to the top of the stack.
-*   **EBP (Base Pointer):** Anchors the bottom of the stack frame.
-*   **EIP (Instruction Pointer):** **The most critical register.** It controls what instruction runs next. If you control EIP, you control the program.
+### 1.2 Basic Logic Patching
+*   **Hex Editing:** Changing a single byte to alter logic.
+    *   Change `74` (`JE` - Jump if Equal) to `75` (`JNE` - Jump if Not Equal).
+    *   This flips the logic: "If password is correct" becomes "If password is NOT correct".
 
-## 5.3 Reverse Engineering Workflow
-The goal is to understand the logic without source code.
+### Practice 1.1: The Hardcoded Pass
+**Scenario:** `login` program asks for a PIN.
+1.  Run `./login`. Input `1234`. Result: "Access Denied".
+2.  Run `strings login`.
+3.  You see `Enter PIN:`, `Access Denied`, `Access Granted`, and `8492`.
+4.  Run `./login` and try `8492`. Success!
 
-### Step-by-Step: Decompiling with Ghidra
-**Scenario:** You have a binary `auth` that asks for a password.
+**Challenge Question 1:** What does the instruction `NOP` (No Operation) do? (It does nothing, just takes up space. Often used for padding).
 
-1.  **Import:** Open Ghidra, create a project, and import `auth`.
-2.  **Analyze:** Double-click `auth` to open the CodeBrowser. When asked to "Analyze?", click "Yes" (Defaults are fine).
-3.  **Symbol Tree:** On the left, expand "Functions". Look for `main`.
-4.  **Decompile:** Click `main`. The window on the right ("Decompile") shows semi-readable C code.
-5.  **Read:** Look for logic like:
+---
+
+## Level 2: Intermediate
+**Goal:** Read C-like pseudocode using a Decompiler.
+
+### 2.1 Ghidra
+The NSA's open-source reverse engineering suite.
+*   **CodeBrowser:** The main window.
+*   **Decompiler Pane:** The magic window that shows you C code.
+*   **Analysis:** Renaming variables (e.g., changing `iVar1` to `user_input`) makes code readable.
+
+### Practice 2.1: The Keygen
+**Scenario:** A program generates a license key based on your name.
+1.  Open in **Ghidra**. Find `main`.
+2.  Decompile reads:
     ```c
-    if (strcmp(input, "SuperSecretPassing") == 0) {
-        give_flag();
-    }
+    int valid = 0;
+    if (input + 5 == 100) { valid = 1; }
     ```
-6.  **Solve:** The password is `SuperSecretPassing`.
+3.  Logic: My input plus 5 must equal 100.
+4.  Solution: Input must be `95`.
 
-## 5.4 Binary Exploitation (Pwn)
-Breaking the program to run your own code (Shellcode).
+**Challenge Question 2:** In C, what function is commonly used to compare two strings? (`strcmp`)
 
-### Buffer Overflow
-A buffer overflow happens when a program reads more data into a fixed-size buffer than it can hold.
+---
 
-**The Logic:**
-1.  Variable `buffer` is allocated 64 bytes on the stack.
-2.  Important data (like the **Return Address**) sits right next to it.
-3.  User inputs 100 bytes.
-4.  The first 64 fill the buffer. The remaining 36 spill over ("overflow") and overwrite the Return Address.
-5.  When the function finishes (`ret`), the CPU tries to jump to the overwritten address.
-6.  If you overwrite it with the address of "Give Shell" function -> **You win.**
+## Level 3: Advanced
+**Goal:** Smash the Stack (Buffer Overflow).
 
-### Step-by-Step: Analysis with GDB
-**Scenario:** `vuln` crashes when you give it long input.
+### 3.1 Memory Layout
+*   **Stack:** Where local variables live. Grows down.
+*   **Return Address:** Tells the CPU where to go after a function finishes.
+*   **Buffer Logic:** If you write past the end of a buffer, you overwrite the Return Address.
 
-1.  **Start GDB:** `gdb ./vuln`
-2.  **Run:** `r` -> Program starts.
-3.  **Crash it:** Type `AAAAAAAAAA...` (lots of A's).
-4.  **Check Crash:** Program stops with `Segmentation fault`.
-5.  **Inspect EIP:** `info registers`.
-    *   If `eip` is `0x41414141` (`AAAA`), it means you successfully controlled the execution pointer.
+### 3.2 GDB (GNU Debugger)
+*   `gdb ./vuln`: Start debugging.
+*   `break main`: Stop at the start.
+*   `run`: Start the program.
+*   `x/10s $esp`: Examine 10 lines of the stack pointer.
+
+### Practice 3.1: Controlling EIP
+**Scenario:** `vuln` has a buffer of 64 chars.
+1.  Create input: Python `print("A"*70)`.
+2.  Run inside GDB: `run < input.txt`.
+3.  App crashes: `Segmentation Fault`.
+4.  Check registers: `info registers`.
+5.  `EIP` is `0x41414141` (`AAAA`).
+6.  **Conclusion:** You control exactly where the program jumps next.
+
+**Challenge Question 3:** What is "Shellcode"? (A small piece of code used as the payload in an exploit, often spawning a shell).

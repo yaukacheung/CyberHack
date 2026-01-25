@@ -1,70 +1,90 @@
 # Chapter 1: Introduction to CTFs & Ethics
 
-## 1.1 What are CTFs?
-Capture The Flag (CTF) competitions are gamified cybersecurity exercises where participants—either individually or in teams—are challenged to solve security puzzles. The goal is to find a hidden string of text, known as a "flag," which is usually in the format `CTF{s0m3_l33t_str1ng}`.
+## Core Concepts & Definitions
+**Capture The Flag (CTF)** competitions are cybersecurity exercises where participants solve challenges to find a "flag" (a secret string). They mimic real-world security scenarios in a safe, gamified environment.
 
-### Types of CTFs
-There are several formats of CTFs, each testing different skill sets.
+**Key Terminology:**
+*   **Flag:** The target string (e.g., `CTF{w3lc0m3_h4ck3r}`).
+*   **Shell:** A command-line interface to interact with an OS.
+*   **Root/Admin:** The superuser account with full system privileges.
+*   **Exploit:** Code or technique that takes advantage of a vulnerability.
 
-![CTF Types Comparison](images/ctf_types_dgm.png)
+---
 
-1.  **Jeopardy-Style:**
-    *   **Format:** Similar to the TV show Jeopardy! Board of challenges categorized by topic (Web, Crypto, Pwn, Forensics) and difficulty.
-    *   **Scoring:** Points are awarded for each solved challenge. Harder challenges yield more points.
-    *   **Best For:** Beginners and learning specific skills. This is the most common format.
+## Level 1: Fundamentals
+**Goal:** Understand the environment and navigate the command line.
 
-2.  **Attack-Defense:**
-    *   **Format:** Each team is given a vulnerable server to defend. They must patch their own vulnerabilities while exploiting the same vulnerabilities on other teams' servers.
-    *   **Scoring:** Points are gained for capturing flags from opponents (Attack) and maintaining service uptime (Defense/SLA).
-    *   **Skills:** Requires rapid patch analysis, network monitoring, and exploit automation.
+### 1.1 The Command Line Interface (CLI)
+Hacking is rarely done with a mouse. You must master the keyboard.
 
-3.  **King of the Hill (KotH):**
-    *   **Format:** Players compete to gain control of a machine and maintain access for the longest time.
+**Essential Commands:**
+*   `pwd` (Print Working Directory): "Where am I?"
+*   `ls` (List): "What files are here?"
+    *   `ls -la`: Show hidden files (starting with `.`) and details.
+*   `cd` (Change Directory): "Go somewhere else."
+    *   `cd ..`: Go up one folder.
+    *   `cat [file]`: "Read this file."
 
-## 1.2 Ethics and Legal Frameworks
-Hacking skills are like superpowers—they can be used for good or evil. Understanding the boundary is critical.
+### 1.2 Ethics: The Golden Rules
+1.  **Ownership:** Do not hack what you do not own.
+2.  **Permission:** Written consent is mandatory for testing others' systems.
+3.  **Privacy:** Respect the data you encounter.
 
-### The "Hat" Terminology
-*   **White Hat:** Ethical hackers who secure systems. They have permission to test and report vulnerabilities.
-*   **Black Hat:** Malicious hackers who break into systems for personal gain, destruction, or fame. **Illegal.**
-*   **Gray Hat:** Operates in a moral gray area, often finding vulnerabilities without permission but reporting them instead of exploiting them. **Still risky and often illegal.**
+### Practice 1.1: The Hidden File
+**Scenario:** You have a folder `challenge`.
+1.  Open your terminal.
+2.  Navigate to the folder: `cd challenge`
+3.  List files: `ls` -> Nothing visible?
+4.  List hidden: `ls -la` -> You see `.flag.txt`.
+5.  Read it: `cat .flag.txt`.
 
-### Rules of Engagement (RoE)
-Before touching any system, you must know the RoE.
-1.  **Authorized Access Only:** Never target a system you don't own or have explicit written permission to test.
-2.  **Scope:** Know clearly what is in-scope (allowed) and out-of-scope (forbidden). E.g., attacking the application is okay, but DDoS-ing the server is usually banned.
-3.  **Responsible Disclosure:** If you find a bug in the wild, report it securely to the vendor (e.g., via Bugcrowd, HackerOne, or security.txt).
+**Challenge Question 1:** What command would you use to read the first 10 lines of a very long file named `access.log`? (Hint: search for the `head` command).
 
-## 1.3 Setting Up Your Lab
-You need a safe environment to practice attacking without risking your personal computer.
+---
 
-### Step-by-Step: Installing Kali Linux on VirtualBox
+## Level 2: Intermediate
+**Goal:** Set up a hacking lab and connect to remote systems.
 
-**Step 1: Download the Hypervisor**
-*   Download and install **VirtualBox** (free) or **VMware Workstation Player**.
-*   This software allows you to run a "computer inside a computer."
+### 2.1 Virtualization
+Never hack from your host OS (Windows/Mac). Use a **Virtual Machine (VM)** like Kali Linux. It isolates dangerous code and keeps your personal data safe.
+*   **Hypervisor:** The software running the VM (VirtualBox, VMware).
+*   **Guest OS:** The virtualized system (Kali).
 
-**Step 2: Download the Guest OS**
-*   Go to [kali.org/get-kali](https://www.kali.org/get-kali/) and download the "Virtual Machines" pre-built image for VirtualBox.
-*   *Why Kali?* It comes pre-installed with hundreds of hacking tools (Metasploit, Burp Suite, unrar, etc.).
+### 2.2 Remote Access (SSH)
+**Secure Shell (SSH)** is the standard for encrypted remote login.
+*   **Syntax:** `ssh user@ip_address -p port`
+*   **Example:** `ssh student@10.10.10.5 -p 22`
+*   **Key-based Auth:** More secure than passwords. Uses a private key file (`id_rsa`) to authenticate.
 
-**Step 3: Import the Appliance**
-1.  Open VirtualBox.
-2.  File -> Import Appliance.
-3.  Select the downloaded `.ova` file.
-4.  Click "Import".
+### Practice 2.1: The Remote Login
+**Scenario:** You are given credentials: IP `192.168.1.50`, User `ctf`, Pass `toor`.
+1.  Command: `ssh ctf@192.168.1.50`
+2.  Enter password: `toor` (It won't show on screen!).
+3.  Once logged in, run `whoami` to verify identity.
 
-**Step 4: Network Configuration (Crucial!)**
-*   **NAT Network:** Your VM can access the internet, but the internet can't access your VM. Safe default.
-*   **Bridged Adapter:** Your VM appears as a separate device on your local Wi-Fi. Useful for Attack-Defense but riskier on public networks.
+**Challenge Question 2:** You are trying to SSH into a server but get a "Connection Refused" error. What are two possible reasons?
 
-**Step 5: Snapshots**
-*   Before doing anything risky (or breaking your config), take a **Snapshot**. This saves the current state of the VM so you can revert to it instantly if everything breaks.
+---
 
-### Basic Linux Skills
-The terminal is your home.
-*   `ls -la`: List all files, including hidden ones.
-*   `cd /path/to/dir`: Change directory.
-*   `pwd`: Print working directory.
-*   `sudo command`: Run as root (administrator).
-*   `man command`: Read the manual for a command (e.g., `man grep`).
+## Level 3: Advanced
+**Goal:** Automate tasks and understand the legal nuances.
+
+### 3.1 Scripting Basics
+A hacker who can't script is limited by their tools.
+*   **Bash Scripting:** Automating shell commands.
+    *   Loop: `for i in {1..10}; do echo $i; done`
+*   **Python:** The hacker's Swiss Army Knife.
+    *   Libraries like `requests` (Web) and `pwntools` (Binary) are essential.
+
+### 3.2 Advanced Ethics: Disclosure
+**Responsible Disclosure:**
+*   You find a Critical SQL Injection in a bank's website.
+*   **Do:** Find their "Bug Bounty" program or `security.txt` file. Report details encrypted.
+*   **Don't:** Tweet about it. Dump the database. Demand money (Extortion).
+
+### Practice 3.1: The Port Sweeper
+**Scenario:** You need to check if 5 servers are alive.
+**Task:** Write a one-line bash script to ping IPs `192.168.1.1` to `192.168.1.5`.
+*   **Solution:** `for i in {1..5}; do ping -c 1 192.168.1.$i; done`
+
+**Challenge Question 3:** Write a Python one-liner to print "Hack the Planet" 100 times.

