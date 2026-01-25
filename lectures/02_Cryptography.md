@@ -1,38 +1,86 @@
 # Chapter 2: Cryptography
 
-Cryptography is the art of writing or solving codes. In CTFs, this often involves decoding hidden messages or breaking weak encryption.
+## 2.1 Introduction to Cryptography
+Cryptography is the backbone of secure communication. In CTFs, you face "broken" crypto—weak logic, leaked keys, or implementation errors.
 
-## Key Concepts
+### Encoding vs. Encryption vs. Hashing
+Understanding the difference is critical.
 
-### Encoding vs. Encryption
-*   **Encoding:** transforming data into a new format using a publicly available scheme (e.g., Base64, Hex). No key is required to reverse it.
-*   **Encryption:** transforming data to keep it secret. Requires a key to decrypt (e.g., AES, RSA).
+| Type | Reversible? | Key Required? | Purpose | Example |
+| :--- | :--- | :--- | :--- | :--- |
+| **Encoding** | Yes | No | Usability / Formatting | Base64, Hex, ASCII |
+| **Encryption** | Yes | Yes | Confidentiality | AES, RSA |
+| **Hashing** | No | No | Integrity | SHA-256, MD5 |
 
-### Common Encodings
-1.  **Base64:** ends with `=`, uses `A-Z, a-z, 0-9, +, /`.
-    *   Example: `SGVsbG8=` -> `Hello`
-2.  **Hexadecimal:** uses `0-9, A-F`.
-    *   Example: `48 65 6c 6c 6f` -> `Hello`
-3.  **URL Encoding:** uses `%` followed by hex.
-    *   Example: `%20` is a space.
+## 2.2 Classical Ciphers
+These are historical ciphers. They are insecure but frequent in beginner CTFs.
 
-## Classical Ciphers
-These are often found in beginner challenges.
-1.  **Caesar Cipher:** Shifts letters by a fixed number (e.g., A -> C with shift 2).
-2.  **Vigenère Cipher:** Uses a keyword to shift letters.
-3.  **Substitution Cipher:** Replaces each letter with another based on a key alphabet.
+### Caesar Cipher (Shift Cipher)
+*   **Concept:** Shift every letter by $N$ positions.
+*   **Weakness:** Only 25 possible keys (in English). Trivial to brute-force.
+*   **Math:** $C = (P + K) \pmod{26}$
 
-*Tool:* Use [CyberChef](https://gchq.github.io/CyberChef/) or [dcode.fr](https://www.dcode.fr/) to break these.
+### Vigenère Cipher
+*   **Concept:** Polyalphabetic substitution using a keyword.
+*   **Weakness:** Vulnerable to frequency analysis if the text is long enough. 
+*   **Tool:** Use [dcode.fr](https://www.dcode.fr/vigenere-cipher) or Kasiski test.
 
-## Modern Cryptography
-1.  **Symmetric (Private Key):** Same key for encryption and decryption (e.g., AES, DES).
-    *   Challenge: Key distribution.
-2.  **Asymmetric (Public Key):** Public key to encrypt, Private key to decrypt (e.g., RSA).
-    *   Mathematical foundation involves prime factorization.
+## 2.3 Modern Symmetric Cryptography
+The same key is used for encryption and decryption.
 
-## Hashing
-One-way functions that map data of arbitrary size to fixed-size values.
-*   **MD5, SHA-1:** Older, considered weak/broken options.
-*   **SHA-256:** Standard secure hash.
-*   **Usage:** file integrity verification, password storage.
-*   **Attacks:** Rainbow tables, hash collisions.
+### XOR (Exclusive OR)
+The most important operator in CTF crypto.
+*   **Truth Table:**
+    *   0 XOR 0 = 0
+    *   0 XOR 1 = 1
+    *   1 XOR 0 = 1
+    *   1 XOR 1 = 0
+*   **Property:** $A \oplus B = C$ and $C \oplus B = A$. It is its own inverse.
+*   **One-Time Pad (OTP):** If the key is random and as long as the message, it is mathematically unbreakable.
+
+### AES (Advanced Encryption Standard)
+*   **Block Cipher:** Encrypts data in fixed-size blocks (128 bits).
+*   **Modes of Operation:**
+    *   **ECB (Electronic Codebook):** Weak. Same plaintext block always equals same ciphertext block. Patterns remain visible (e.g., the Tux penguin image).
+    *   **CBC (Cipher Block Chaining):** Secure. Uses an IV (Initialization Vector) to randomize the first block.
+
+## 2.4 Modern Asymmetric Cryptography
+Uses a Public Key (encrypt) and Private Key (decrypt).
+
+### RSA (Rivest–Shamir–Adleman)
+Security relies on the difficulty of factoring large semiprime numbers.
+*   **Variables:**
+    *   $p, q$: Large prime numbers.
+    *   $N = p \times q$: The modulus (Public).
+    *   $e$: Public exponent (usually 65537).
+    *   $d$: Private exponent (Secret).
+*   **Attacks:**
+    *   **Small N:** Factorize $N$ using online databases (factordb.com).
+    *   **Small e:** If $e=3$, susceptible to cube root attacks.
+
+## 2.5 Practical Guide: Breaking Codes
+
+### Step-by-Step: Multi-Layer Decoding with CyberChef
+Often, flags are encoded multiple times (e.g., Base64 -> Hex -> Rot13).
+
+1.  **Open CyberChef:** [https://gchq.github.io/CyberChef/](https://gchq.github.io/CyberChef/)
+2.  **Input:** Paste the "gibberish" string into the Input box.
+3.  **Recipes:** Dragon-and-drop "Magic" block into the Recipe area.
+4.  **Analyze:** If "Magic" fails, look at the format.
+    *   Ends in `=`? Try "From Base64".
+    *   Only 0-9, A-F? Try "From Hex".
+    *   Readable but scrambled? Try "ROT13".
+
+### Step-by-Step: Cracking Hash Passwords
+You found a hash in a database dump: `5f4dcc3b5aa765d61d8327deb882cf99`.
+
+1.  **Identify:** Use `hash-identifier` in Kali or an online tool. Result: MD5.
+2.  **Wordlist:** Locate `rockyou.txt` in Kali (`/usr/share/wordlists/rockyou.txt.gz`). Unzip it.
+3.  **Hashcat:**
+    *   Command: `hashcat -m 0 -a 0 hash.txt rockyou.txt`
+    *   `-m 0`: Mode 0 (MD5).
+    *   `-a 0`: Attack mode 0 (Wordlist).
+4.  **Result:** The tool will output the plaintext password.
+
+<!-- Placeholder: [Image: sym_vs_asym_enc.png] - Diagram showing shared key vs public/private key flows -->
+<!-- Placeholder: [Image: hashing_visual.png] - Visualizing how different inputs produce fixed-length hashes -->

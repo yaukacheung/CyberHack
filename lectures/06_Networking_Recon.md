@@ -1,35 +1,60 @@
 # Chapter 6: Networking & Reconnaissance
 
-Understanding networks is crucial for finding targets and vulnerabilities.
+## 6.1 The Language of the Internet (TCP/IP)
+Hacking is often just manipulating network traffic.
 
-## Ports and Protocols
-*   **TCP vs UDP:** Reliable connection vs. connectionless communication.
-*   **Common Ports:**
-    *   21: FTP
-    *   22: SSH
-    *   23: Telnet
-    *   53: DNS
-    *   80: HTTP / 443: HTTPS
-    *   445: SMB (Windows File Sharing)
+### The TCP 3-Way Handshake
+Before data sends, a connection must be established. This is polite networking.
 
-## Reconnaissance (Recon)
-Gathering information about a target.
+<!-- Placeholder: [Image: tcp_handshake.png] - SYN, SYN-ACK, ACK flow diagram -->
 
-### Passive Recon
-Gathering info without directly interacting with the target system.
-*   **Whois:** Domain registration info.
-*   **OSINT (Open Source Intelligence):** Searching Google, social media, GitHub.
-*   **Shodan:** Search engine for connected devices.
+1.  **SYN:** Client sends "Hello, I want to talk" (Synchronization).
+2.  **SYN-ACK:** Server sends "Okay, I'm listening" (Synchronization + Acknowledgment).
+3.  **ACK:** Client sends "Great, let's start" (Acknowledgment).
 
-### Active Recon
-Directly probing the target.
-*   **Nmap (Network Mapper):** The standard for network scanning.
-    *   `nmap -sC -sV [IP]`: Scan with default scripts and version detection.
-    *   `nmap -p- [IP]`: Scan all 65535 ports.
-*   **Directory Busting:** Finding hidden directories on web servers.
-    *   Tools: `gobuster`, `dirb`, `ffuf`.
-    *   Example: `gobuster dir -u http://target.com -w common-wordlist.txt`
+*   **CTF Tip:** A "SYN Scan" (Nmap default) sends step 1. If it gets step 2 back, the port is open. It never sends step 3, making it slightly stealthier.
 
-## Traffic Analysis
-Understanding flow of data.
-*   **Wireshark / tcpdump:** As mentioned in Forensics, critical for seeing what's happening on the wire.
+### Subnetting (CIDR Notation)
+*   `192.168.1.0/24`: The "slash 24" means the first 24 bits (3 octets) are fixed.
+    *   IPs range from `192.168.1.1` to `192.168.1.254`.
+*   `127.0.0.1`: Localhost (Your own computer).
+
+## 6.2 Reconnaissance (Enumeration)
+"Give me six hours to chop down a tree and I will spend the first four sharpening the axe." - Abraham Lincoln.
+
+### Active Scanning with Nmap
+Nmap is the King of Scanners.
+
+<!-- Placeholder: [Image: nmap_scan_types.png] - Visualizing different scan techniques -->
+
+#### Step-by-Step: Enumerating a Target
+**Target:** `10.10.10.5`
+
+1.  **Quick Scan:**
+    *   Command: `nmap -sC -sV 10.10.10.5`
+    *   `-sC`: Use default scripts (finds titles, headers).
+    *   `-sV`: Probe open ports to determine service/version info.
+2.  **Full Port Scan:**
+    *   Command: `nmap -p- 10.10.10.5`
+    *   Scans all 65,535 ports. Critical if SSH is hidden on port 2222.
+3.  **UDP Scan:**
+    *   Command: `nmap -sU 10.10.10.5`
+    *   Slow, but finds things like SNMP or TFTP.
+
+### Directory Busting (Web Recon)
+Finding hidden folders on a web server.
+*   **Tools:** `gobuster`, `dirb`, `dirsearch`.
+*   **Concept:** The tool has a list of words (`admin`, `login`, `backup`). It asks the server: "Do you have /admin?".
+*   **Command:** `gobuster dir -u http://10.10.10.5 -w /usr/share/wordlists/dirb/common.txt`
+
+## 6.3 The Swiss Army Knife: Netcat
+Netcat (`nc`) reads and writes data across network connections.
+
+*   **Connect to a port:** `nc [IP] [PORT]`
+    *   Example: `nc 10.10.10.5 1337` (Connect to a challenge service).
+*   **Listen on a port:** `nc -lvnp [PORT]`
+    *   `-l`: Listen mode.
+    *   `-v`: Verbose.
+    *   `-n`: No DNS lookup (faster).
+    *   `-p`: Port number.
+    *   Example: `nc -lvnp 4444` (Waiting for a reverse shell to connect back to you).

@@ -1,35 +1,70 @@
 # Chapter 1: Introduction to CTFs & Ethics
 
-## What are CTFs?
-Capture The Flag (CTF) competitions are cybersecurity exercises where participants are challenged to find "flags" hidden in vulnerable programs or websites.
+## 1.1 What are CTFs?
+Capture The Flag (CTF) competitions are gamified cybersecurity exercises where participants—either individually or in teams—are challenged to solve security puzzles. The goal is to find a hidden string of text, known as a "flag," which is usually in the format `CTF{s0m3_l33t_str1ng}`.
 
 ### Types of CTFs
+There are several formats of CTFs, each testing different skill sets.
+
+![CTF Types Comparison](images/ctf_types_dgm.png)
+
 1.  **Jeopardy-Style:**
-    *   Challenges are categorized (e.g., Web, Crypto, Pwn).
-    *   Teams gain points for solving challenges.
-    *   Most common format for beginners.
+    *   **Format:** Similar to the TV show Jeopardy! Board of challenges categorized by topic (Web, Crypto, Pwn, Forensics) and difficulty.
+    *   **Scoring:** Points are awarded for each solved challenge. Harder challenges yield more points.
+    *   **Best For:** Beginners and learning specific skills. This is the most common format.
+
 2.  **Attack-Defense:**
-    *   Teams defend their own network while attacking others.
-    *   Requires a balance of offensive and defensive skills.
-    *   Real-time scoring based on service uptime and flags captured.
-3.  **Mixed:**
-    *   A combination of both formats.
+    *   **Format:** Each team is given a vulnerable server to defend. They must patch their own vulnerabilities while exploiting the same vulnerabilities on other teams' servers.
+    *   **Scoring:** Points are gained for capturing flags from opponents (Attack) and maintaining service uptime (Defense/SLA).
+    *   **Skills:** Requires rapid patch analysis, network monitoring, and exploit automation.
 
-## Ethics and Computer Law
-Security professionals must operate within legal and ethical boundaries.
+3.  **King of the Hill (KotH):**
+    *   **Format:** Players compete to gain control of a machine and maintain access for the longest time.
 
-*   **Authorized Access:** Only test systems you have explicit permission to attack.
-*   **Responsible Disclosure:** If you find a vulnerability in a real-world system, report it securely to the owner.
-*   **White Hat vs. Black Hat:** understand the distinction between ethical hacking (defensive/authorized) and malicious hacking.
+## 1.2 Ethics and Legal Frameworks
+Hacking skills are like superpowers—they can be used for good or evil. Understanding the boundary is critical.
 
-## Basic Skills
-### Linux Command Line
-The terminal is your primary tool.
-*   `ls`, `cd`, `pwd`: Navigation
-*   `cat`, `grep`, `less`: File reading
-*   `chmod`, `chown`: Permissions
-*   `ssh`: Remote access
+### The "Hat" Terminology
+*   **White Hat:** Ethical hackers who secure systems. They have permission to test and report vulnerabilities.
+*   **Black Hat:** Malicious hackers who break into systems for personal gain, destruction, or fame. **Illegal.**
+*   **Gray Hat:** Operates in a moral gray area, often finding vulnerabilities without permission but reporting them instead of exploiting them. **Still risky and often illegal.**
 
-### Virtual Machines
-*   Use Kali Linux or Parrot OS as your attack environment.
-*   Keep your host machine safe by isolating dangerous tasks in a VM.
+### Rules of Engagement (RoE)
+Before touching any system, you must know the RoE.
+1.  **Authorized Access Only:** Never target a system you don't own or have explicit written permission to test.
+2.  **Scope:** Know clearly what is in-scope (allowed) and out-of-scope (forbidden). E.g., attacking the application is okay, but DDoS-ing the server is usually banned.
+3.  **Responsible Disclosure:** If you find a bug in the wild, report it securely to the vendor (e.g., via Bugcrowd, HackerOne, or security.txt).
+
+## 1.3 Setting Up Your Lab
+You need a safe environment to practice attacking without risking your personal computer.
+
+### Step-by-Step: Installing Kali Linux on VirtualBox
+
+**Step 1: Download the Hypervisor**
+*   Download and install **VirtualBox** (free) or **VMware Workstation Player**.
+*   This software allows you to run a "computer inside a computer."
+
+**Step 2: Download the Guest OS**
+*   Go to [kali.org/get-kali](https://www.kali.org/get-kali/) and download the "Virtual Machines" pre-built image for VirtualBox.
+*   *Why Kali?* It comes pre-installed with hundreds of hacking tools (Metasploit, Burp Suite, unrar, etc.).
+
+**Step 3: Import the Appliance**
+1.  Open VirtualBox.
+2.  File -> Import Appliance.
+3.  Select the downloaded `.ova` file.
+4.  Click "Import".
+
+**Step 4: Network Configuration (Crucial!)**
+*   **NAT Network:** Your VM can access the internet, but the internet can't access your VM. Safe default.
+*   **Bridged Adapter:** Your VM appears as a separate device on your local Wi-Fi. Useful for Attack-Defense but riskier on public networks.
+
+**Step 5: Snapshots**
+*   Before doing anything risky (or breaking your config), take a **Snapshot**. This saves the current state of the VM so you can revert to it instantly if everything breaks.
+
+### Basic Linux Skills
+The terminal is your home.
+*   `ls -la`: List all files, including hidden ones.
+*   `cd /path/to/dir`: Change directory.
+*   `pwd`: Print working directory.
+*   `sudo command`: Run as root (administrator).
+*   `man command`: Read the manual for a command (e.g., `man grep`).
