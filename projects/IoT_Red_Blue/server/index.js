@@ -1,5 +1,7 @@
 const Hapi = require('@hapi/hapi');
 const Joi = require('joi');
+const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
 const connectDB = require('./config/db');
 const Sensor = require('./models/Sensor');
@@ -136,6 +138,27 @@ const init = async () => {
                 return await Sensor.find(query).limit(50);
             } catch (err) {
                 return h.response({ error: err.message }).code(500);
+            }
+        }
+    });
+
+    // Provide Laboratory Guides (Markdown)
+    server.route({
+        method: 'GET',
+        path: '/api/guides/{id}',
+        handler: async (request, h) => {
+            const guideId = request.params.id;
+            const safeId = guideId.replace(/[^a-zA-Z0-9_-]/g, '');
+            const filePath = path.join(__dirname, '../docs', `Part_${safeId}_Guide.md`);
+
+            try {
+                if (fs.existsSync(filePath)) {
+                    const content = fs.readFileSync(filePath, 'utf8');
+                    return { id: guideId, content };
+                }
+                return h.response({ error: 'Guide not found' }).code(404);
+            } catch (err) {
+                return h.response({ error: 'Failed to read guide' }).code(500);
             }
         }
     });

@@ -19,6 +19,8 @@ export default function IoTDashboard() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isMenuOpen, setIsMenuOpen] = useState(true);
+  const [selectedGuide, setSelectedGuide] = useState(null);
+  const [guideContent, setGuideContent] = useState('');
 
   const fetchData = useCallback(async () => {
     try {
@@ -46,6 +48,19 @@ export default function IoTDashboard() {
       } catch (err) {
         alert("Reset Failed: Unauthorized");
       }
+    }
+  };
+
+  const fetchGuide = async (id) => {
+    try {
+      setLoading(true);
+      const res = await axios.get(`${API_BASE}/guides/${id}`);
+      setGuideContent(res.data.content);
+      setSelectedGuide(id);
+      setLoading(false);
+    } catch (err) {
+      alert("Failed to load guide. Make sure the server is healthy.");
+      setLoading(false);
     }
   };
 
@@ -170,35 +185,58 @@ export default function IoTDashboard() {
         )}
 
         {activeTab === 'labs' && (
-          <div className="glass-panel p-8 prose prose-invert max-w-none">
-            <h1 className="text-2xl mb-8 flex items-center gap-4">
-              <Book className="text-cyan-400" /> Lab Instructor Guide
-            </h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 not-prose">
-              {[
-                { id: 'A', title: 'Static Spoofing', desc: 'Learn to intercept and replay HTTP traffic.' },
-                { id: 'B', title: 'NoSQL Injection', desc: 'Identify hidden devices using query operators.' },
-                { id: 'C', title: 'Brute Force', desc: 'Crack admin login with credential stuffing.' },
-                { id: 'D', title: 'Denial of Service', desc: 'Flood the system to disrupt legitimate nodes.' },
-                { id: 'E', title: 'Defense & Analysis', desc: 'Using this dashboard to mitigate threats.' }
-              ].map(lab => (
-                <div key={lab.id} className="glass-panel p-6 hover:border-cyan-400/50 transition-colors group cursor-pointer">
-                  <div className="w-10 h-10 rounded-full bg-cyan-400/10 flex items-center justify-center text-cyan-400 font-bold mb-4 group-hover:scale-110 transition-transform">
-                    {lab.id}
-                  </div>
-                  <h3 className="font-bold text-lg mb-2">{lab.title}</h3>
-                  <p className="text-white/50 text-sm mb-4">{lab.desc}</p>
-                  <button className="text-cyan-400 text-xs font-bold hover:underline">READ GUIDE &rarr;</button>
+          <div className="glass-panel p-8">
+            {!selectedGuide ? (
+              <>
+                <h1 className="text-2xl mb-8 flex items-center gap-4">
+                  <Book className="text-cyan-400" /> Lab Instructor Guide
+                </h1>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 not-prose">
+                  {[
+                    { id: 'A', title: 'Static Spoofing', desc: 'Learn to intercept and replay HTTP traffic.' },
+                    { id: 'B', title: 'NoSQL Injection', desc: 'Identify hidden devices using query operators.' },
+                    { id: 'C', title: 'Brute Force', desc: 'Crack admin login with credential stuffing.' },
+                    { id: 'D', title: 'Denial of Service', desc: 'Flood the system to disrupt legitimate nodes.' },
+                    { id: 'E', title: 'Defense & Analysis', desc: 'Using this dashboard to mitigate threats.' }
+                  ].map(lab => (
+                    <div
+                      key={lab.id}
+                      onClick={() => fetchGuide(lab.id)}
+                      className="glass-panel p-6 hover:border-cyan-400/50 transition-colors group cursor-pointer"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-cyan-400/10 flex items-center justify-center text-cyan-400 font-bold mb-4 group-hover:scale-110 transition-transform">
+                        {lab.id}
+                      </div>
+                      <h3 className="font-bold text-lg mb-2">{lab.title}</h3>
+                      <p className="text-white/50 text-sm mb-4">{lab.desc}</p>
+                      <button className="text-cyan-400 text-xs font-bold hover:underline">READ GUIDE &rarr;</button>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <div className="mt-12 bg-white/5 p-6 rounded-xl flex items-center gap-6">
-              <Info className="text-cyan-400 w-12 h-12" />
-              <div>
-                <h4 className="font-bold italic">Lab Environment Note</h4>
-                <p className="text-sm text-white/60">This dashboard is part of your Blue Team toolkit. Use it to observe Red Team activities in real-time. All guides are located in the <code>/docs</code> directory of the project root.</p>
+                <div className="mt-12 bg-white/5 p-6 rounded-xl flex items-center gap-6">
+                  <Info className="text-cyan-400 w-12 h-12" />
+                  <div>
+                    <h4 className="font-bold italic">Lab Environment Note</h4>
+                    <p className="text-sm text-white/60">This dashboard is part of your Blue Team toolkit. Use it to observe Red Team activities in real-time. All guides are located in the <code>/docs</code> directory of the project root.</p>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-col h-[70vh]">
+                <div className="flex justify-between items-center mb-6">
+                  <button
+                    onClick={() => setSelectedGuide(null)}
+                    className="flex items-center gap-2 text-cyan-400 hover:text-white transition-colors"
+                  >
+                    <Activity className="rotate-180 w-4 h-4" /> BACK TO LABS
+                  </button>
+                  <h2 className="text-xl font-bold">Lab Phase {selectedGuide}: Instructions</h2>
+                </div>
+                <div className="flex-1 bg-black/40 rounded-xl p-8 overflow-y-auto font-mono text-sm border border-white/5 whitespace-pre-wrap">
+                  {guideContent}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
 
