@@ -4,82 +4,86 @@
 **Reverse Engineering (RevEng)** is the process of deconstructing software to reveal its architecture and logic. **Binary Exploitation (Pwn)** is using that knowledge to make the program do something it wasn't intended to do.
 
 **Key Terminology:**
-*   **Source Code:** Human-readable code (C, Python).
-*   **Binary/Executable:** Machine code (0s and 1s) run by the CPU.
-*   **Assembly (ASM):** Low-level human-readable representation of machine code.
-*   **Decompiler:** Tool to try and turn Binary back into Source Code.
+*   **Machine Code:** The 0s and 1s the CPU executes.
+*   **Assembly (ASM):** Human-readable mnemonics for machine code (e.g., `MOV`, `ADD`, `JMP`).
+*   **Decompiler:** A tool that attempts to translate binary back into higher-level C code.
 
 ---
 
 ## Level 1: Fundamentals
-**Goal:** Understand compiled vs interpreted code and find low-hanging fruit.
+**Goal:** Understand the basics of binary files and assembly.
 
-### 1.1 `strings` (Again)
-Before opening a complex tool, always check `strings`.
-*   Many beginners "hardcode" passwords or flags directly into the binary.
-*   *Command:* `strings game.exe | grep "password"`
+### 1.1 CPU Registers 101 (x86)
+Registers are small, super-fast storage areas inside the CPU.
+*   **EAX:** The "Accumulator." Often used for function return values.
+*   **ESP:** The "Stack Pointer." Points to the top of the stack.
+*   **EBP:** The "Base Pointer." Points to the bottom of the current stack frame.
+*   **EIP:** The "Instruction Pointer." Points to the next command to execute. **(The Hacker's Target).**
 
 ### 1.2 Basic Logic Patching
-*   **Hex Editing:** Changing a single byte to alter logic.
-    *   Change `74` (`JE` - Jump if Equal) to `75` (`JNE` - Jump if Not Equal).
-    *   This flips the logic: "If password is correct" becomes "If password is NOT correct".
+If a program says `if (authenticated == 0) exit();`, we can change the assembly to `if (authenticated == 0) continue;`.
+*   **Opcode for JNE (Jump Not Equal):** `75`.
+*   **Opcode for JE (Jump Equal):** `74`.
+*   *Patching:* Swapping these bytes effectively flips the logic of an `if` statement.
 
 ### Practice 1.1: The Hardcoded Pass
-**Scenario:** `login` program asks for a PIN.
-1.  Run `./login`. Input `1234`. Result: "Access Denied".
-2.  Run `strings login`.
-3.  You see `Enter PIN:`, `Access Denied`, `Access Granted`, and `8492`.
-4.  Run `./login` and try `8492`. Success!
+**Scenario:** A binary checks for a secret key.
+1.  Run `strings binary`.
+2.  If the key is visible, the challenge is over.
+3.  If not, open in a Hex Editor and look for logic jumps (`74` or `75`).
 
-**Challenge Question 1:** What does the instruction `NOP` (No Operation) do? (It does nothing, just takes up space. Often used for padding).
+**Challenge Question 1:** What does the `MOV EAX, 1` instruction do?
 
 ---
 
 ## Level 2: Intermediate
-**Goal:** Read C-like pseudocode using a Decompiler.
+**Goal:** Master Ghidra and understand the Stack Frame.
 
-### 2.1 Ghidra
-The NSA's open-source reverse engineering suite.
-*   **CodeBrowser:** The main window.
-*   **Decompiler Pane:** The magic window that shows you C code.
-*   **Analysis:** Renaming variables (e.g., changing `iVar1` to `user_input`) makes code readable.
+### 2.1 The Stack Frame
+Every function call creates a "Frame" on the stack.
+*   **Local Variables:** Stored inside the frame.
+*   **Return Address:** Stored just outside/above the frame.
+*   **The Vulnerability:** If a program lets you write 100 bytes into a 64-byte variable, you will "overflow" the frame and overwrite the Return Address.
+
+### 2.2 Advanced Ghidra
+*   **Cross References (XREFS):** Right-click a function or string to see every place in the program that uses it.
+*   **Script Manager:** Use built-in Python scripts to automate tasks like finding all calls to `scanf` (a dangerous function).
 
 ### Practice 2.1: The Keygen
-**Scenario:** A program generates a license key based on your name.
-1.  Open in **Ghidra**. Find `main`.
-2.  Decompile reads:
-    ```c
-    int valid = 0;
-    if (input + 5 == 100) { valid = 1; }
-    ```
-3.  Logic: My input plus 5 must equal 100.
-4.  Solution: Input must be `95`.
+**Scenario:** Decompiled code in Ghidra showing a XOR loop.
+1.  Code: `for(i=0; i<4; i++) { key[i] = name[i] ^ 0x42; }`
+2.  Logic: Every character of your name is XORed with `0x42`.
+3.  Solution: Write a small script to perform this XOR on your name to get the valid key.
 
-**Challenge Question 2:** In C, what function is commonly used to compare two strings? (`strcmp`)
+**Challenge Question 2:** In Ghidra, what does the "Decompile" window show compared to the "Listing" window?
 
 ---
 
 ## Level 3: Advanced
-**Goal:** Smash the Stack (Buffer Overflow).
+**Goal:** Control execution flow via Buffer Overflow.
 
-### 3.1 Memory Layout
-*   **Stack:** Where local variables live. Grows down.
-*   **Return Address:** Tells the CPU where to go after a function finishes.
-*   **Buffer Logic:** If you write past the end of a buffer, you overwrite the Return Address.
+### 3.1 Exploiting the Stack (Pwn)
+1.  **Find the Offset:** How many "A"s does it take to overwrite EIP?
+2.  **Control EIP:** Prove you can jump to an arbitrary address (e.g., `0xdeadbeef`).
+3.  **The Payload (Shellcode):** Instead of `AAAA`, write a series of instructions that spawn a shell (`/bin/sh`).
 
-### 3.2 GDB (GNU Debugger)
-*   `gdb ./vuln`: Start debugging.
-*   `break main`: Stop at the start.
-*   `run`: Start the program.
-*   `x/10s $esp`: Examine 10 lines of the stack pointer.
+### 3.2 GDB & Pwntools
+*   **GDB-Peda/GEF:** Extensions for GDB that add colors and helpful exploit commands.
+*   **Pwntools (Python):** The industry standard for writing exploits.
+    ```python
+    from pwn import *
+    p = process('./vuln')
+    payload = b"A" * 68 + p32(0x080484b6) # Overwrite EIP with win() address
+    p.sendline(payload)
+    p.interactive()
+    ```
 
 ### Practice 3.1: Controlling EIP
-**Scenario:** `vuln` has a buffer of 64 chars.
-1.  Create input: Python `print("A"*70)`.
-2.  Run inside GDB: `run < input.txt`.
-3.  App crashes: `Segmentation Fault`.
-4.  Check registers: `info registers`.
-5.  `EIP` is `0x41414141` (`AAAA`).
-6.  **Conclusion:** You control exactly where the program jumps next.
+**Task:** Identify the overflow point in `vuln`.
+1.  Generate large input: `cyclic 100`.
+2.  Run in GDB: `r < input.txt`.
+3.  Check EIP: `i r eip` -> `0x6161616a`.
+4.  Find offset: `cyclic -l 0x6161616a` -> Offset is 36.
 
-**Challenge Question 3:** What is "Shellcode"? (A small piece of code used as the payload in an exploit, often spawning a shell).
+**Challenge Question 3:** What is "ASLR" (Address Space Layout Randomization) and why does it make binary exploitation harder?
+

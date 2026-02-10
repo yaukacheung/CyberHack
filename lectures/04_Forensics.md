@@ -4,61 +4,52 @@
 **Digital Forensics** is the investigation and recovery of material found in digital devices. In CTFs, this usually means extracting a hidden flag from a file (image, audio, memory dump, or network capture).
 
 **Key Terminology:**
-*   **Metadata:** Data about data (e.g., GPS location of a photo).
 *   **Header (Magic Bytes):** The unique signature at the start of a file identifying its format.
-*   **PCAP:** Packet Capture (network traffic recording).
-*   **Steganography:** Hiding a secret validly inside another file.
+*   **Steganography:** Hiding a secret inside another file without changing its appearance.
+*   **LSB (Least Significant Bit):** A steganography technique that modifies the last bit of a pixel's color value to hide data.
 
 ---
 
 ## Level 1: Fundamentals
-**Goal:** Extract visible text and metadata.
+**Goal:** Extract visible text and identify file types correctly.
 
-### 1.1 The `strings` Command
-Binary files look like garbage in a text editor, but they often contain readable ASCII strings.
-*   **Command:** `strings [filename]`
-*   **Usage:** Finding hardcoded passwords, URLs, or flags.
-*   **Filter:** `strings binary.exe | grep "CTF"`
+### 1.1 The `file` Command (First Step)
+Never trust a file extension. A `.txt` might be a `.pdf` in disguise.
+*   **Command:** `file [filename]`
+*   **Effect:** It looks at the "Magic Bytes" to tell you what the file *actually* is.
 
-### 1.2 Metadata Analysis
-Every file carries baggage.
-*   **ExifTool:** Reads image metadata.
-    *   *Look for:* Comments, Camera Model, GPS Coordinates.
+### 1.2 Text Extraction
+*   **Strings command:** `strings [filename]` extracts ASCII text.
+*   **Pro Tip:** Use `strings -n 10` to only show strings at least 10 characters long (reduces noise).
 
-### Practice 1.1: The LOUD Whisper
-**Scenario:** You are given `image.jpg`.
-1.  Run `strings image.jpg`.
-2.  Output is 10,000 lines.
-3.  Refine: `strings image.jpg | grep "CTF"`.
-4.  Found: `CTF{n0th1ng_1s_h1dd3n}`.
+### Practice 1.1: The Identity Crisis
+**Scenario:** `mystery_file.jpg` won't open.
+1.  Run `file mystery_file.jpg`.
+2.  Output: `mystery_file.jpg: POSIX tar archive`.
+3.  Rename: `mv mystery_file.jpg mystery_file.tar`.
+4.  Extract: `tar -xvf mystery_file.tar`.
 
-**Challenge Question 1:** What command allows you to search for a specific case-insensitive pattern in a text file? (`grep -i`)
+**Challenge Question 1:** If `strings` doesn't find the flag, what other encoding should you check for inside the binary? (Hint: Base64).
 
 ---
 
 ## Level 2: Intermediate
 **Goal:** Analyze file structures and use Steganography tools.
 
-### 2.1 Magic Bytes & Hex Editors
-Trust fingerprints, not extensions.
-*   **Hex Editor:** Tools like `HxD` or `Okteta` show the raw bytes.
-*   **Scenario:** A file named `flag.txt` won't open.
-    *   *Check bytes:* `89 50 4E 47...` -> It's a PNG! Rename it to `.png`.
+### 2.1 Binwalk & Foremost
+*   **Binwalk:** The standard tool for finding embedded files. `binwalk -e [file]` extracts everything it finds.
+*   **Foremost:** An alternative to Binwalk that "carves" files based on headers and footers.
 
-### 2.2 Binwalk
-Files can be glued together.
-*   **Binwalk:** Scans a file for embedded file signatures.
-*   **Command:** `binwalk -e [file]` (Extracts recursively).
+### 2.2 LSB Steganography
+Images are made of pixels. Each pixel has RGB values (e.g., 255, 255, 255). Changing a value by 1 (e.g., to 254) is invisible to the human eye but can be used to store bits of a flag.
+*   **Tool:** `StegSolve` or `zsteg` (for PNG).
 
-### Practice 2.1: The Matryoshka Doll
-**Scenario:** A large `cat.jpg`.
-1.  Run `binwalk cat.jpg`.
-    *   Result: `Zip archive data, at offset 13050`.
-2.  Run `binwalk -e cat.jpg`.
-3.  Open the extracted folder `_cat.jpg.extracted`.
-4.  Find `flag.txt` inside.
+### Practice 2.1: The Hidden Archive
+**Scenario:** A `photo.png`.
+1.  Run `zsteg photo.png`.
+2.  Found: `b1,rgb,lsb,xy .. text: "CTF{lsb_is_sneaky}"`.
 
-**Challenge Question 2:** What is the standard header (Magic Bytes) for a ZIP file? (`PK` or `50 4B`)
+**Challenge Question 2:** What is "Data Carving" in forensics?
 
 ---
 
@@ -66,20 +57,24 @@ Files can be glued together.
 **Goal:** Network analysis and Memory forensics.
 
 ### 3.1 Network Forensics (Wireshark)
-Analyzing traffic to reconstruct actions.
-*   **Follow TCP Stream:** Reassembles the conversation between client and server.
-*   **Export Objects:** Extracts files (images, exes) that were downloaded during the capture.
+**Essential Filters:**
+*   `http`: Only show web traffic.
+*   `ip.addr == 10.0.0.5`: Only show traffic to/from this IP.
+*   `tcp.port == 4444`: Look for shells.
+*   `frame contains "CTF"`: Search the entire packet dump for a string.
 
 ### 3.2 Memory Volatility
-Analyzing RAM dumps (`.mem` files) to find running processes, clipboard contents, or cmd history.
-*   **Tool:** `volatility`.
+**Tool:** `volatility2` or `volatility3`.
+1.  **Identify Image Info:** `volatility -f mem.raw imageinfo` (finds the OS version).
+2.  **List Processes:** `volatility -f mem.raw --profile=... pslist`.
+3.  **Command History:** `volatility -f mem.raw --profile=... cmdline`.
 
-### Practice 3.1: The Intercept
-**Scenario:** `traffic.pcap`. A user downloaded a secret file.
+### Practice 3.1: Reconstructing a File
+**Scenario:** `dump.pcap`. A user uploaded a secret.
 1.  Open in Wireshark.
-2.  Filter: `http.request.method == GET`.
-3.  See a request for `secret.pdf`.
-4.  Go to `File -> Export Objects -> HTTP`.
-5.  Select `secret.pdf` and Save.
+2.  Filter: `http` and look for `POST` requests.
+3.  Right-click the packet -> "Follow TCP Stream."
+4.  Select "Raw" data and save the portion that looks like a file header.
 
-**Challenge Question 3:** In Wireshark, what color usually represents TCP retransmissions or bad checksums? (Black/Red)
+**Challenge Question 3:** What is the difference between an "Active" and "Passive" network capture?
+

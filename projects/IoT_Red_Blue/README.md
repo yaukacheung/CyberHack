@@ -43,6 +43,29 @@ cd rpi_simulator
 node malicious_node.js
 ```
 
+### 5. Start the Project Website (Blue Team Dashboard)
+Open a new terminal:
+```bash
+cd client
+npm install
+npm run dev
+```
+*Website runs at: http://localhost:3001*
+
+
+## Learning Resources
+- [Concepts](docs/Red_vs_Blue_Concepts.md): Role definitions and background.
+- [IoT Security Primer](docs/IoT_Security_Primer.md): Supporting technical details.
+- [Review Questions](docs/Questions.md): Test your knowledge.
+
 ## Scenarios
-- **Part A (Static):** Intercept the traffic from `sensor.js` and spoof it. See `docs/Part_A_Guide.md`.
-- **Part B (Dynamic):** Use NoSQL injection to find the hidden device ID. See `docs/Part_B_Guide.md`.
+- **Part A (Static):** Intercept the traffic from `sensor.js` and spoof it. See [Part A Guide](docs/Part_A_Guide.md).
+- **Part B (Dynamic):** Use NoSQL injection to find the hidden device ID. See [Part B Guide](docs/Part_B_Guide.md).
+- **Part C (Auth):** Brute force the admin login. See [Part C Guide](docs/Part_C_Guide.md).
+- **Part D (DoS):** Flood the server to disrupt service. See [Part D Guide](docs/Part_D_Guide.md).
+- **Part E (Dashboard):** Use the web console to detect and respond to threats. See [Part E Guide](docs/Part_E_Guide.md).
+
+
+## Tools
+- **Blue Team Monitor (`/rpi_simulator/monitor.js`)**: A script to detect anomalies and surges in traffic.
+

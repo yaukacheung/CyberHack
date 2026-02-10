@@ -6,89 +6,80 @@
 **Key Terminology:**
 *   **Plaintext:** The original message.
 *   **Ciphertext:** The scrambled message.
-*   **Key:** The secret password used to encrypt/decrypt.
-*   **Encoding:** Changing data format (e.g., Base64). No key needed.
-*   **Encryption:** Scrambling data for secrecy. Key needed.
-*   **Hashing:** One-way fingerprint of data.
+*   **Encoding:** Changing data format (e.g., Base64). No key needed. **Encoding is NOT encryption.**
+*   **Hashing:** A one-way "fingerprint" of data.
 
 ---
 
 ## Level 1: Fundamentals
 **Goal:** Recognize and break historical ciphers.
 
-### 1.1 Historical Ciphers
-These rely on "Security by Obscurity."
+### 1.1 Symmetric vs Asymmetric
+*   **Symmetric:** One key to rule them all. The same key is used for both encryption and decryption (e.g., AES, Caesar).
+*   **Asymmetric:** The Power of Pairs. Uses a Public key (to encrypt) and a Private key (to decrypt). (e.g., RSA).
+
+### 1.2 Historical Ciphers
 *   **Caesar Cipher:** Shifts every letter by $N$.
-    *   Example: `HELLO` + Shift 1 -> `IFMMP`.
-*   **Substitution Cipher:** Replaces letters with symbols/other letters.
+*   **ROT13:** A specific Caesar shift of 13. Applying ROT13 twice returns the original text.
+*   **Atbash:** A simple substitution cipher that reverses the alphabet (A becomes Z, B becomes Y).
 
-### 1.2 Basic Encoding
-*   **Base64:** The most common encoding.
-    *   *Characteristic:* `A-Z, a-z, 0-9, +, /`. Often ends in `=`.
-    *   *Usage:* Transmitting binary data as text.
+### 1.3 Tools of the Trade
+*   **CyberChef:** The "Cyber Swiss Army Knife." Use it to chain encoding/decoding operations (e.g., "From Base64" -> "To Hex" -> "XOR").
 
-### Practice 1.1: The Caesar Box
-**Scenario:** You find a note: `Uryyb Jbeyq`.
-1.  Go to [dcode.fr/caesar-cipher](https://www.dcode.fr/caesar-cipher).
-2.  Input the text.
-3.  Click "Decrypt" (Brute-force all shifts).
-4.  Shift 13 gives: `Hello World` (This is ROT13).
+### Practice 1.1: The Base64 Trap
+**Scenario:** You find `SGVsbG8gV29ybGQ=`.
+1.  Open **CyberChef**.
+2.  Input the string.
+3.  Drag "From Base64" into the recipe.
+4.  Result: `Hello World`.
 
-**Challenge Question 1:** A string contains only numbers and letters A-F. What encoding is this likely to be?
+**Challenge Question 1:** What is the most obvious visual indicator that a string might be Base64 encoded?
 
 ---
 
 ## Level 2: Intermediate
-**Goal:** Master the XOR operator and multi-step decoding.
+**Goal:** Master the XOR operator and modern symmetric standards.
 
 ### 2.1 The Magic of XOR ($\oplus$)
-Exclusive OR is the foundation of modern crypto.
-*   **Logic:** If bits are different -> 1. If same -> 0.
-*   **Reversible:** `A XOR B = C` implies `C XOR B = A`.
+*   **Property:** `A ^ B = C` and `C ^ B = A`. This makes XOR its own inverse.
+*   **CTF Tip:** If you have the original file (plaintext) and the encrypted version, XORing them together reveals the **Key**.
 
 ### 2.2 Modern Symmetric: AES
-**Advanced Encryption Standard (AES)** is the global standard.
-*   **Key Sizes:** 128, 192, 256 bits.
-*   **Weakness:** Implementing **ECB Mode** (Electronic Codebook) leaves patterns visible.
+**Advanced Encryption Standard (AES)**.
+*   **Modes:** 
+    *   **ECB (Electronic Codebook):** Weak. Each block is encrypted independently. Identical blocks produce identical ciphertext (reveals patterns).
+    *   **CBC (Cipher Block Chaining):** Stronger. Each block is XORed with the previous ciphertext block before encryption.
 
-### Practice 2.1: The Onion
-**Scenario:** A string is encoded like this: `Base64(Hex(Rot13("Flag")))`.
+### Practice 2.1: The Multi-Layer Decode
 **Task:** Decode `NGQ2MTY2ZGM2MjYzNjQ=`.
-1.  Open **CyberChef**.
-2.  Input: `NGQ2MTY2ZGM2MjYzNjQ=`
-3.  Recipe: "From Base64" -> Result: `4d6166dc626364`
-4.  Add Recipe: "From Hex" -> Result: `Maf\Übcd` (Garbage?)
-    *   *Wait!* Let's check the hex. `4d`=`M`, `61`=`a`.
-    *   Try Rot13 first? No, Base64 was definitely last.
-    *   *Correction:* Base64 -> `4d61666463626364` -> Hex -> `Mafdcbcd` -> Rot13 -> `Znsqpopq`...
-    *   *Actual String:* `ZmxhZw==` -> Base64 -> `flag`.
+1.  **From Base64:** `4d61666463626364`
+2.  **From Hex:** `Mafdcbcd`
+3.  **ROT13:** `Znsqpopq`
+4.  *Wait, check the logic again.* CTFs often stack these. Always look for readable fragments.
 
-**Challenge Question 2:** If you XOR a file with itself, what is the result?
+**Challenge Question 2:** If you have a 4-byte key for XOR, but your message is 20 bytes long, how is the XOR applied?
 
 ---
 
 ## Level 3: Advanced
-**Goal:** Attack RSA and understand hashing collisions.
+**Goal:** Attack RSA and understand hashing security.
 
-### 3.1 RSA Mathematics
-RSA is asymmetric (Public Key + Private Key).
-*   $N = p \times q$ (Public Modulus, where p/q are prime).
-*   $C = M^e \pmod N$ (Encryption).
-*   $M = C^d \pmod N$ (Decryption).
-*   **The Attack:** Calculate $p$ and $q$ by factoring $N$. Once you have $p/q$, you can calculate $d$ (Private Key).
+### 3.1 RSA & Prime Factoring
+RSA security relies on the difficulty of factoring large numbers into primes.
+*   **FactDB:** A public database of known prime factors. If your $N$ is in FactDB, the challenge is over.
+*   **RsaCtfTool:** An automated tool that tries dozens of known RSA attacks (Common Modulus, Fermat’s, etc.).
 
-### 3.2 Hashing Collisions
-Hashes are unique... theoretically.
-*   **MD5 Collision:** Two different files having the exact same MD5 hash.
-*   **Tool:** `hashclash`.
+### 3.2 Hashing & Salts
+Hashes (MD5, SHA256) are one-way. You can't "decrypt" them, you can only "crack" them by guessing.
+*   **Rainbow Tables:** Pre-computed tables of hashes for millions of common passwords.
+*   **Salts/Nonces:** Random data added to the password before hashing. A salt makes Rainbow Tables useless because the salt is unique for every user.
 
 ### Practice 3.1: Cracking Weak RSA
-**Scenario:** You are given $N=33$, $e=7$.
-1.  Factorize $N$: $33 = 3 \times 11$. So $p=3, q=11$.
-2.  Calculate $\phi(N) = (p-1)(q-1) = 2 \times 10 = 20$.
-3.  Calculate $d$: $d$ must satisfy $(d \times e) \pmod {\phi(N)} = 1$.
-    *   $(d \times 7) \pmod{20} = 1$.
-    *   Try $d=3$: $21 \pmod{20} = 1$. Yes.
-    *   **Private Key (d) = 3.**
+**Scenario:** $N=33, e=7, C=10$.
+1.  $N = 3 \times 11$. $p=3, q=11$.
+2.  $\phi(N) = 2 \times 10 = 20$.
+3.  $d$ satisfies $d \times 7 \equiv 1 \pmod{20}$. $d=3$.
+4.  $M = C^d \pmod N = 10^3 \pmod{33} = 1000 \pmod{33} = 10$.
 
-**Challenge Question 3:** Why is it dangerous to use the same modulus $N$ with different public exponents $e$ for two different users? (Hint: Common Modulus Attack).
+**Challenge Question 3:** What is a "Hash Collision" and why does it mean MD5 is no longer considered secure for digital signatures?
+

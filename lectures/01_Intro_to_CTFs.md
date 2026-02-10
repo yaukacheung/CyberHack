@@ -3,6 +3,10 @@
 ## Core Concepts & Definitions
 **Capture The Flag (CTF)** competitions are cybersecurity exercises where participants solve challenges to find a "flag" (a secret string). They mimic real-world security scenarios in a safe, gamified environment.
 
+### CTF Formats
+1.  **Jeopardy:** Challenges are categorized (Web, Crypto, Pwn, etc.) with increasing point values. Solved independently.
+2.  **Attack-Defense:** Each team has a server to defend while attacking others. Focuses on patching and real-time response.
+
 **Key Terminology:**
 *   **Flag:** The target string (e.g., `CTF{w3lc0m3_h4ck3r}`).
 *   **Shell:** A command-line interface to interact with an OS.
@@ -17,13 +21,18 @@
 ### 1.1 The Command Line Interface (CLI)
 Hacking is rarely done with a mouse. You must master the keyboard.
 
-**Essential Commands:**
+**Essential Navigation:**
 *   `pwd` (Print Working Directory): "Where am I?"
-*   `ls` (List): "What files are here?"
-    *   `ls -la`: Show hidden files (starting with `.`) and details.
-*   `cd` (Change Directory): "Go somewhere else."
-    *   `cd ..`: Go up one folder.
-    *   `cat [file]`: "Read this file."
+*   `ls -la`: "What files are here?" (Includes hidden files starting with `.`).
+*   `cd ..`: Go up one directory.
+*   `cat [file]`: Display file content.
+
+**Powerful CLI Concepts:**
+*   **Redirection (`>`, `>>`):** 
+    *   `echo "hello" > file.txt` (Overwrite/Create).
+    *   `echo "world" >> file.txt` (Append).
+*   **Piping (`|`):** Send the output of one command as input to another.
+    *   `cat access.log | grep "admin"` (Search for 'admin' inside the log).
 
 ### 1.2 Ethics: The Golden Rules
 1.  **Ownership:** Do not hack what you do not own.
@@ -34,11 +43,10 @@ Hacking is rarely done with a mouse. You must master the keyboard.
 **Scenario:** You have a folder `challenge`.
 1.  Open your terminal.
 2.  Navigate to the folder: `cd challenge`
-3.  List files: `ls` -> Nothing visible?
-4.  List hidden: `ls -la` -> You see `.flag.txt`.
-5.  Read it: `cat .flag.txt`.
+3.  List hidden: `ls -la` -> You see `.flag.txt`.
+4.  Read it: `cat .flag.txt`.
 
-**Challenge Question 1:** What command would you use to read the first 10 lines of a very long file named `access.log`? (Hint: search for the `head` command).
+**Challenge Question 1:** How would you save the list of all files in a directory to a file named `inventory.txt`?
 
 ---
 
@@ -46,23 +54,22 @@ Hacking is rarely done with a mouse. You must master the keyboard.
 **Goal:** Set up a hacking lab and connect to remote systems.
 
 ### 2.1 Virtualization
-Never hack from your host OS (Windows/Mac). Use a **Virtual Machine (VM)** like Kali Linux. It isolates dangerous code and keeps your personal data safe.
-*   **Hypervisor:** The software running the VM (VirtualBox, VMware).
-*   **Guest OS:** The virtualized system (Kali).
+Never hack from your host OS. Use a **Virtual Machine (VM)** like Kali Linux. 
+*   **Snapshotting:** Save the state of your VM before doing something dangerous. If you break it, just revert to the snapshot.
 
 ### 2.2 Remote Access (SSH)
 **Secure Shell (SSH)** is the standard for encrypted remote login.
-*   **Syntax:** `ssh user@ip_address -p port`
-*   **Example:** `ssh student@10.10.10.5 -p 22`
-*   **Key-based Auth:** More secure than passwords. Uses a private key file (`id_rsa`) to authenticate.
+*   **Syntax:** `ssh user@ip_address`
+*   **Pro Tip (Troubleshooting):**
+    *   If you get a "Host Key Verification Failed" error, it means the server's fingerprint changed. Use `ssh-keygen -R [IP]` to clear the old key.
+    *   Use `-v` for verbose output to debug connection issues.
 
 ### Practice 2.1: The Remote Login
-**Scenario:** You are given credentials: IP `192.168.1.50`, User `ctf`, Pass `toor`.
+**Scenario:** Login to `192.168.1.50` as user `ctf`.
 1.  Command: `ssh ctf@192.168.1.50`
-2.  Enter password: `toor` (It won't show on screen!).
-3.  Once logged in, run `whoami` to verify identity.
+2.  Verify identity: Run `whoami` and `hostname`.
 
-**Challenge Question 2:** You are trying to SSH into a server but get a "Connection Refused" error. What are two possible reasons?
+**Challenge Question 2:** What flag in SSH allows you to specify a different port (e.g., port 2222)?
 
 ---
 
@@ -70,21 +77,20 @@ Never hack from your host OS (Windows/Mac). Use a **Virtual Machine (VM)** like 
 **Goal:** Automate tasks and understand the legal nuances.
 
 ### 3.1 Scripting Basics
-A hacker who can't script is limited by their tools.
-*   **Bash Scripting:** Automating shell commands.
-    *   Loop: `for i in {1..10}; do echo $i; done`
-*   **Python:** The hacker's Swiss Army Knife.
-    *   Libraries like `requests` (Web) and `pwntools` (Binary) are essential.
+*   **Variables in Bash:** `NAME="Hacker"; echo $NAME`
+*   **Conditionals:**
+    ```bash
+    if [ -f "flag.txt" ]; then
+      echo "Flag found!"
+    fi
+    ```
 
 ### 3.2 Advanced Ethics: Disclosure
-**Responsible Disclosure:**
-*   You find a Critical SQL Injection in a bank's website.
-*   **Do:** Find their "Bug Bounty" program or `security.txt` file. Report details encrypted.
-*   **Don't:** Tweet about it. Dump the database. Demand money (Extortion).
+**Bug Bounty Programs:** Platforms like HackerOne or Bugcrowd provide a legal framework for reporting vulnerabilities in exchange for rewards. Always stick to the **Scope** defined in the program.
 
 ### Practice 3.1: The Port Sweeper
-**Scenario:** You need to check if 5 servers are alive.
-**Task:** Write a one-line bash script to ping IPs `192.168.1.1` to `192.168.1.5`.
-*   **Solution:** `for i in {1..5}; do ping -c 1 192.168.1.$i; done`
+**Task:** Check if machines `.1` to `.5` respond to ping.
+*   **Solution:** `for i in {1..5}; do ping -c 1 192.168.1.$i | grep "64 bytes"; done`
 
-**Challenge Question 3:** Write a Python one-liner to print "Hack the Planet" 100 times.
+**Challenge Question 3:** How do you make a bash script executable? (Hint: `chmod`)
+

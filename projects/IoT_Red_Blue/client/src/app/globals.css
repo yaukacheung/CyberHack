@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+:root {
+  --background: #080a0f;
+  --foreground: #e2e8f0;
+  --accent-cyan: #06b6d4;
+  --accent-red: #ef4444;
+  --accent-green: #10b981;
+  --glass: rgba(15, 23, 42, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+@layer components {
+  .glass-panel {
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 1rem;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  }
+
+  .cyber-button {
+    @apply px-4 py-2 rounded-lg font-bold transition-all duration-300 flex items-center gap-2;
+    border: 1px solid var(--accent-cyan);
+    color: var(--accent-cyan);
+    background: transparent;
+  }
+
+  .cyber-button:hover {
+    background: var(--accent-cyan);
+    color: white;
+    box-shadow: 0 0 15px var(--accent-cyan);
+  }
+
+  .cyber-button-red {
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+  }
+
+  .cyber-button-red:hover {
+    background: var(--accent-red);
+    color: white;
+    box-shadow: 0 0 15px var(--accent-red);
+  }
+
+  .status-badge {
+    @apply px-2 py-1 rounded text-xs font-mono uppercase tracking-wider;
+  }
+}
+
+.glow-cyan { text-shadow: 0 0 10px var(--accent-cyan); }
+.glow-red { text-shadow: 0 0 10px var(--accent-red); }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-cyan);
+}
