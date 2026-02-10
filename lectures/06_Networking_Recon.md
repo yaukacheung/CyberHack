@@ -51,6 +51,12 @@
 1.  Run `nmap -T4 -A 10.10.10.5`.
 2.  Analysis: If port `445` is open with `samba`, search for "EternalBlue" exploit.
 
+### Practice 2.2: IoT Reconnaissance
+**Scenario:** An unknown IoT device is active on your local network (`localhost:3000`).
+1.  **Scan**: Use `nmap -sV -p 3000 localhost` to identify the service.
+2.  **Fingerprint**: Can you determine if it's a web server or a custom protocol?
+3.  **Analyze**: Look for the `/api/readings` endpoint. What format is the data in?
+
 **Challenge Question 2:** Why is a "Stealth SYN Scan" (`-sS`) considered stealthy compared to a full TCP Connect scan (`-sT`)?
 
 ---
@@ -76,6 +82,13 @@ Netcat isn't just for shells; it's a fast way to move data.
 2.  Victim: Connects back with the Python one-liner above.
 3.  Attacker: Inside the shell, run `CTRL+Z` -> `stty raw -echo; fg` -> `reset`.
 4.  **Result:** You now have TAB-completion and a clearable screen!
+
+### Practice 3.2: Live Dashboard Monitoring
+**Scenario:** You are the Blue Team analyst for a smart city project.
+1.  **Launch**: Start the IoT Red vs Blue dashboard at `http://localhost:3001`.
+2.  **Simulate**: Use `node malicious_node.js` from the project simulator to launch an attack.
+3.  **Detect**: Can you see the spike in traffic on the real-time chart?
+4.  **Respond**: Use the dashboard's "Isolation" feature to block the malicious node's IP.
 
 **Challenge Question 3:** What is a "Static Binary" and why do hackers use static versions of tools like `nmap` or `socat` during post-exploitation?
 

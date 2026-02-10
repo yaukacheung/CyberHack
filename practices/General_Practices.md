@@ -107,6 +107,31 @@ This manual is designed to transition you from theory to professional-grade expl
 
 ---
 
+## 📡 06. IoT Intrusion & Defense: The Connected Threat
+
+### Phase A: Discovery
+1.  **Network Mapping**:
+    *   **Task**: Identify the IoT API server.
+    *   **Command**: `nmap -sV -p 3000 localhost`.
+2.  **API Enumeration**:
+    *   **Task**: Find the data endpoint.
+    *   **Command**: `curl http://localhost:3000/api/readings`.
+
+### Phase B: Exploitation (The Lab)
+1.  **The NoSQL Injection**:
+    *   **Scenario**: The server uses a NoSQL database for device lookups.
+    *   **Task**: Use an object-based query to bypass the device ID requirement.
+    *   **Payload**: `deviceId[$ne]=test`.
+2.  **The Data Spoof**:
+    *   **Task**: Use `curl` to send a POST request with a fake high temperature (e.g., 100°C).
+    *   **Observation**: Check the Blue Team Dashboard (`localhost:3001`) to see if the alert triggers.
+
+### Phase C: Think Like a Hacker (Assessment)
+*   **Q1**: Why is NoSQL injection often missed by traditional SQL-focused vulnerability scanners?
+*   **Q2**: In an IoT context, how can "Rate Limiting" help prevent both DoS and Brute Force attacks?
+
+---
+
 ## 🏆 Final Challenge: The Combined Mission
 **Scenario**: You are given a password-protected ZIP file (`Forensics`). Inside is an encoded text file (`Crypto`). The key to the ZIP is hidden in an IDOR vulnerability on a mock website (`Web`).
 **Task**: Map out the steps you would take to solve this multi-stage challenge.

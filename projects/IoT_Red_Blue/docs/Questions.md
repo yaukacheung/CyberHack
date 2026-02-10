@@ -24,3 +24,8 @@ Test your understanding of the concepts and exercises in this project.
 
 ## Discussion Point
 *In a real-world smart home system, if an attacker compromises a smart lightbulb, what else could they potentially reach on the network? Research "Lateral Movement".*
+
+## Advanced Challenges (Customization)
+1. **Extensibility**: When you added the `humidity` sensor, what new "Logic Bombs" could an attacker create?
+2. **Detection**: How would you update the Blue Team monitor to alert on "Out of Range" humidity values specifically?
+

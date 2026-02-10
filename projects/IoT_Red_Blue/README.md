@@ -64,6 +64,7 @@ npm run dev
 - **Part C (Auth):** Brute force the admin login. See [Part C Guide](docs/Part_C_Guide.md).
 - **Part D (DoS):** Flood the server to disrupt service. See [Part D Guide](docs/Part_D_Guide.md).
 - **Part E (Dashboard):** Use the web console to detect and respond to threats. See [Part E Guide](docs/Part_E_Guide.md).
+- **Part F (Customization):** Extend the system with new sensors and logic. See [Part F Guide](docs/Part_F_Guide.md).
 
 
 ## Tools
