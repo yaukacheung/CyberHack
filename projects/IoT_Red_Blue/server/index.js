@@ -1,6 +1,12 @@
 const Hapi = require('@hapi/hapi');
+const Joi = require('joi');
+require('dotenv').config();
 const connectDB = require('./config/db');
 const Sensor = require('./models/Sensor');
+
+const PORT = process.env.PORT || 3000;
+const ADMIN_USER = process.env.ADMIN_USERNAME || 'admin';
+const ADMIN_PASS = process.env.ADMIN_PASSWORD || 'password123';
 
 // In-memory log for the dashboard (Blue Team)
 const serverLogs = [];
@@ -13,149 +19,126 @@ const addLog = (type, message, ip) => {
         ip
     };
     serverLogs.push(entry);
-    if (serverLogs.length > 100) serverLogs.shift(); // Keep last 100
+    if (serverLogs.length > 100) serverLogs.shift();
     console.log(`[${entry.type}] ${entry.message} (${ip})`);
 };
 
 const init = async () => {
-
-
-    // Connect to Database
     await connectDB();
 
     const server = Hapi.server({
-        port: 3000,
+        port: PORT,
         host: 'localhost',
         routes: {
             cors: {
-                origin: ['*'], // In a real app, restrict this
+                origin: ['*'],
                 additionalHeaders: ['cache-control', 'x-requested-with']
             }
         }
     });
 
-
-    // Logging Middleware (Basic IDS/Monitor)
+    // IDS Logging Middleware
     server.ext('onRequest', (request, h) => {
         const ip = request.info.remoteAddress;
-        const method = request.method.toUpperCase();
-        const path = request.path;
-
-        // Don't log internal dashboard polls too noisily if needed, but for now log everything
-        addLog('INFO', `${method} ${path}`, ip);
+        addLog('INFO', `${request.method.toUpperCase()} ${request.path}`, ip);
 
         if (request.payload && JSON.stringify(request.payload).length > 2000) {
-            addLog('ALERT', `Large Payload Flood detected`, ip);
+            addLog('ALERT', 'Large Payload Flood detected', ip);
         }
-
         return h.continue;
     });
 
-    // Route: Root
     server.route({
         method: 'GET',
         path: '/',
-        handler: (request, h) => {
-            return { msg: 'IoT Command Center Online', version: '1.5.0' };
-        }
+        handler: () => ({
+            msg: 'IoT Command Center Online',
+            version: '1.5.1',
+            status: 'Operational',
+            flag: 'CTF{iot_discovery_success}' // R1.1 Flag
+        })
     });
 
-    // Route: Get Security Logs (For Dashboard)
     server.route({
         method: 'GET',
         path: '/api/logs',
-        handler: (request, h) => {
-            return serverLogs.filter(l => l.type !== 'INFO').reverse();
-        }
+        handler: () => serverLogs.filter(l => l.type !== 'INFO').reverse()
     });
 
-    // Route: Get Stats (For Dashboard)
     server.route({
         method: 'GET',
         path: '/api/stats',
-        handler: async (request, h) => {
+        handler: async () => {
             const count = await Sensor.countDocuments();
             const latest = await Sensor.find().sort({ timestamp: -1 }).limit(10);
             return { totalReadings: count, latest };
         }
     });
 
-    // Route: Reset Database (VULNERABLE: Weak Auth)
-    server.route({
-        method: 'POST',
-        path: '/api/reset',
-        handler: async (request, h) => {
-            const { username, password } = request.payload || {};
-            if (username === 'admin' && password === 'password123') {
-                await Sensor.deleteMany({});
-                addLog('SUCCESS', 'Database Reset by Admin', request.info.remoteAddress);
-                return { status: 'success' };
-            }
-            addLog('WARN', 'Unauthorized Reset Attempt', request.info.remoteAddress);
-            return h.response({ status: 'fail' }).code(401);
-        }
-    });
-
-    // Route: Admin Login (VULNERABLE for Part C: Brute Force)
+    // VULNERABLE: Admin Login (Part C)
     server.route({
         method: 'POST',
         path: '/api/admin/login',
         handler: async (request, h) => {
-            const { username, password } = request.payload;
-
-            if (username === 'admin' && password === 'password123') {
-                addLog('SUCCESS', `Admin login`, request.info.remoteAddress);
-                return { status: 'success', message: 'Welcome Admin' };
-            } else {
-                addLog('WARN', `Failed login attempt for ${username}`, request.info.remoteAddress);
-                return h.response({ status: 'fail', message: 'Invalid Credentials' }).code(401);
+            const { username, password } = request.payload || {};
+            if (username === ADMIN_USER && password === ADMIN_PASS) {
+                addLog('SUCCESS', 'Admin login', request.info.remoteAddress);
+                return {
+                    status: 'success',
+                    message: 'Welcome Admin',
+                    flag: 'CTF{brut3_f0rc3_m4st3r}' // R1.4 Flag
+                };
             }
+            addLog('WARN', `Failed login attempt for ${username}`, request.info.remoteAddress);
+            return h.response({ status: 'fail', message: 'Invalid Credentials' }).code(401);
         }
     });
 
-    // Route: Receive Sensor Data (VULNERABLE: No Auth, No Rate Limit)
+    // Receive Sensor Data - DEFENSE ADDED: Joi Validation
     server.route({
         method: 'POST',
         path: '/api/data',
         handler: async (request, h) => {
             try {
-                const { deviceId, temp, humidity } = request.payload;
-
-                const newReading = new Sensor({
-                    deviceId,
-                    temp,
-                    humidity
-                });
-
+                const newReading = new Sensor(request.payload);
                 await newReading.save();
                 return h.response({ msg: 'Data Received' }).code(201);
             } catch (err) {
                 addLog('ALERT', `Data Save Error: ${err.message}`, request.info.remoteAddress);
                 return h.response({ error: err.message }).code(500);
             }
+        },
+        options: {
+            validate: {
+                payload: Joi.object({
+                    deviceId: Joi.string().required(),
+                    temp: Joi.number().required(),
+                    humidity: Joi.number().required()
+                }),
+                failAction: (request, h, err) => {
+                    addLog('ALERT', `Validation Failed: ${err.message}`, request.info.remoteAddress);
+                    throw err;
+                }
+            }
         }
     });
 
-    // Route: Get Data (VULNERABLE: NoSQL Injection possible in query)
+    // VULNERABLE: NoSQL Injection in query (Part B)
     server.route({
         method: 'GET',
         path: '/api/data',
         handler: async (request, h) => {
             try {
                 const query = request.query;
-
                 if (JSON.stringify(query).includes('$')) {
-                    addLog('ALERT', `Possible NoSQL Injection attempt: ${JSON.stringify(query)}`, request.info.remoteAddress);
+                    addLog('ALERT', `NoSQL Injection attempt: ${JSON.stringify(query)}`, request.info.remoteAddress);
                 }
-
-                const data = await Sensor.find(query).limit(50);
-                return data;
+                return await Sensor.find(query).limit(50);
             } catch (err) {
                 return h.response({ error: err.message }).code(500);
             }
         }
     });
-
 
     await server.start();
     console.log('Server running on %s', server.info.uri);

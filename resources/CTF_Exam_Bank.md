@@ -247,6 +247,37 @@ D. Dig
 
 ---
 
+## Chapter 7-11: Advanced Basics & Operations
+
+**Q7.1:** Which of these is a part of the "Dark Web"?
+A. Google
+B. Tor Network
+C. Wikipedia
+D. Instagram
+
+**Q8.1:** Which OSI layer is responsible for IP Addressing?
+A. Layer 2 (Data Link)
+B. Layer 3 (Network)
+C. Layer 4 (Transport)
+D. Layer 7 (Application)
+
+**Q9.1:** What is the main differentiator of NoSQL Injection?
+A. It targets Oracle databases only.
+B. It uses logical objects/operators instead of plain strings.
+C. It only works on Windows.
+D. It is impossible to prevent.
+
+**Q10.1:** In the PICERL methodology, what does "Containment" mean?
+A. Deleting all files.
+B. Stopping the threat from spreading further.
+C. Paying the ransom.
+D. Writing a blog post about the hack.
+
+**(Short Answer) Q11.1:** Name one characteristic of a "Next-Generation Firewall" (NGFW).
+**(Short Answer) Q11.2:** What is the primary function of a SIEM?
+
+---
+
 ## Answer Key
 
 **Chapter 1**
@@ -296,3 +327,8 @@ D. Dig
 8. Open Source Intelligence (gathering public info).
 9. To find services running on non-standard ports.
 10. `nc -lvnp 4444`
+
+**Chapters 7-11**
+1. B, 8.1 B, 9.1 B, 10.1 B
+11.1 Deep Packet Inspection (Layer 7).
+11.2 Real-time analysis of security alerts/log correlation.

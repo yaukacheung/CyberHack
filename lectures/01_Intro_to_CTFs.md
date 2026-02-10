@@ -94,3 +94,10 @@ Never hack from your host OS. Use a **Virtual Machine (VM)** like Kali Linux.
 
 **Challenge Question 3:** How do you make a bash script executable? (Hint: `chmod`)
 
+---
+
+## 🎓 Academic Connection & Competition
+- **Textbook Correlation**: This chapter corresponds to **Chapter 1** and **Chapter 7 (Basics)** of the [Consolidated Textbook](file:///Users/yoga/Documents/WorkDesk/CyberHack/Cyber_Security_Textbook.pdf).
+- **Practical Application**: The basic CLI navigation skills learned here are essential for the [IoT Red vs Blue Project](file:///Users/yoga/Documents/WorkDesk/CyberHack/projects/IoT_Red_Blue/docs/curriculum.md).
+- **Competition Note**: In Round 1, use these commands to discover the target API server IP.
+

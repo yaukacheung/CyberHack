@@ -5,6 +5,7 @@
 2.  **Practice Together:** Solve challenges on HTB or TryHackMe as a group.
 3.  **Prepare a Cheatsheet:** Have snippets of code for connecting to sockets, parsing text, etc., ready to go.
 4.  **Template Scripts:** Have a basic Python script structure ready for solving challenges.
+5.  **IoT Simulator Lab**: Run the [IoT Red vs Blue](file:///Users/yoga/Documents/WorkDesk/CyberHack/projects/IoT_Red_Blue) locally to practice attacking/defending live traffic.
 
 ## During the Competition
 1.  **Read Carefully:** 50% of the challenge is often understanding the question or clue.

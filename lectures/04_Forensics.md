@@ -78,3 +78,10 @@ Images are made of pixels. Each pixel has RGB values (e.g., 255, 255, 255). Chan
 
 **Challenge Question 3:** What is the difference between an "Active" and "Passive" network capture?
 
+---
+
+## 🎓 Academic Connection & Competition
+- **Textbook Correlation**: This chapter corresponds to **Chapter 4** and **Chapter 10 (Operations)** of the [Consolidated Textbook](file:///Users/yoga/Documents/WorkDesk/CyberHack/Cyber_Security_Textbook.pdf).
+- **Practical Application**: Network forensics is key to identifying the "Invisible Attacker" in the [IoT Project](file:///Users/yoga/Documents/WorkDesk/CyberHack/projects/IoT_Red_Blue/docs/Part_E_Guide.md).
+- **Competition Note**: Use Wireshark filters learned here to identify the Red Team's IP address and score 10 points.
+

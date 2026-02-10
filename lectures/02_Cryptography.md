@@ -83,3 +83,10 @@ Hashes (MD5, SHA256) are one-way. You can't "decrypt" them, you can only "crack"
 
 **Challenge Question 3:** What is a "Hash Collision" and why does it mean MD5 is no longer considered secure for digital signatures?
 
+---
+
+## 🎓 Academic Connection & Competition
+- **Textbook Correlation**: This chapter corresponds to **Chapter 2** of the [Consolidated Textbook](file:///Users/yoga/Documents/WorkDesk/CyberHack/Cyber_Security_Textbook.pdf).
+- **Practical Application**: Hashing and Salts are used in the [IoT Project's Admin Panel](file:///Users/yoga/Documents/WorkDesk/CyberHack/projects/IoT_Red_Blue/server/index.js) to secure credentials.
+- **Competition Note**: In Round 2 (Defense), your task is to ensure all user passwords are properly salted and hashed.
+

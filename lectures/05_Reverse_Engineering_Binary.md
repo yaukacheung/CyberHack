@@ -87,3 +87,10 @@ Every function call creates a "Frame" on the stack.
 
 **Challenge Question 3:** What is "ASLR" (Address Space Layout Randomization) and why does it make binary exploitation harder?
 
+---
+
+## 🎓 Academic Connection & Competition
+- **Textbook Correlation**: This chapter corresponds to **Chapter 5** of the [Consolidated Textbook](file:///Users/yoga/Documents/WorkDesk/CyberHack/Cyber_Security_Textbook.pdf).
+- **Practical Application**: The stack overflow concepts here are the foundation for more advanced IoT exploits (though the current project focuses on high-level API vulnerabilities).
+- **Competition Note**: While not a direct task in the current IoT lab, patching binary vulnerabilities is a key skill for future Attack-Defense CTFs.
+

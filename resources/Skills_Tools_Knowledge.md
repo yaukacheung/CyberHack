@@ -14,12 +14,17 @@ A checklist of tools you should have installed and be familiar with.
 - [ ] **Firefox:** With FoxyProxy and Wappalyzer extensions.
 - [ ] **Gobuster/Dirb:** Directory brute-forcing.
 - [ ] **SQLMap:** Automated SQL injection.
+- [ ] **Joi:** JavaScript input validation (defense).
+
+### Networking & Recon
+- [ ] **Nmap:** Service versioning (`-sV`) and aggressive scanning (`-A`).
+- [ ] **Dig / NSLookup:** DNS records analysis.
+- [ ] **Netcat (`nc`):** Listeners, file transfers, and reverse shells.
 
 ### Forensics & Stego
 - [ ] **Exiftool:** Metadata extraction.
+- [ ] **Wireshark:** Network packet analysis and PCAP filtering.
 - [ ] **Binwalk:** Firmware analysis and extraction.
-- [ ] **Steghide / Stegsolve:** Steganography tools.
-- [ ] **Wireshark:** Network packet analysis.
 - [ ] **Strings:** Extract text from binary.
 
 ### Binary & Reverse Engineering
@@ -38,4 +43,8 @@ Can you explain these concepts?
 - [ ] How a Buffer Overflow works
 - [ ] The difference between Encoding, Hashing, and Encryption
 - [ ] How the HTTP Request/Response cycle works
+- [ ] **IoT Security:** Common vectors (Spoofing, Weak Auth).
+- [ ] **NoSQL Injection:** How it differs from standard SQLi.
+- [ ] **Security Operations:** SIEM, SOAR, and SOC alert lifecycle.
+- [ ] **Incident Response:** The PICERL methodology.
 - [ ] What a "Shebang" (`#!/bin/bash`) is

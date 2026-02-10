@@ -92,3 +92,10 @@ Netcat isn't just for shells; it's a fast way to move data.
 
 **Challenge Question 3:** What is a "Static Binary" and why do hackers use static versions of tools like `nmap` or `socat` during post-exploitation?
 
+---
+
+## 🎓 Academic Connection & Competition
+- **Textbook Correlation**: This chapter corresponds to **Chapter 6** and **Chapter 8 (Foundations)** of the [Consolidated Textbook](file:///Users/yoga/Documents/WorkDesk/CyberHack/Cyber_Security_Textbook.pdf).
+- **Practical Application**: The real-time monitoring and IP isolation tools in the [IoT Blue Dashboard](file:///Users/yoga/Documents/WorkDesk/CyberHack/projects/IoT_Red_Blue/docs/Part_E_Guide.md) are critical for securing connected devices.
+- **Competition Note**: Successfully isolating the Red Team's IP via the dashboard scores 15 points.
+
