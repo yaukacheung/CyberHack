@@ -1,25 +1,54 @@
-# Part B: The Dynamic Target
+# Part B: The Dynamic Target & NoSQL Injection
 
 ## Objective
-There is a "High Value" device hidden in the database. Its ID is NOT `rpi-01`. It changes every time the simulation restarts (conceptually, or you can randomize it). Your goal is to find it and crash it.
+There is a "High Value" device hidden in the database collection. Its ID is NOT `rpi-01`, and it changes dynamically. Your goal is to bypass the application logic using **NoSQL Injection** to discover this hidden device and crash it with spoofed data.
 
-## Scenario
-The API has a vulnerability: **NoSQL Injection**.
+> [!WARNING]
+> **Real-World Scenario:** Unlike SQL Injection which targets relational databases via syntax manipulation, NoSQL injection targets the data structure itself (like JSON objects). Misconfigured MongoDB instances are a leading cause of data breaches.
 
-## Red Team Instructions (The Hunt)
-1.  **Recon:** You don't know the Device ID.
-2.  **Vulnerability Scanning:**
-    *   Try to query the GET endpoint: `GET /api/data?deviceId=...`
-    *   What happens if you send a MongoDB operator instead of a string?
-    *   Payload: `GET /api/data?deviceId[$ne]=rpi-01` (Find devices where ID is NOT rpi-01).
-3.  **Exploit:**
-    *   The server returns a list of *other* devices. One of them is the target (e.g., `secret-sensor-99`).
-4.  **Attack:**
-    *   Now flood the server with data for `secret-sensor-99`.
+---
 
-## Blue Team Instructions
-1.  **Audit:** Review the code in `server/index.js`.
-2.  **Fix:**
-    *   Sanitize the `query` input.
-    *   Ensure `deviceId` is always a String, never an Object (which allows `$ne`, `$gt`, etc.).
-    *   Use Joi validation.
+## 🔴 Red Team Instructions (The Hunt)
+
+### 1. Reconnaissance
+You know the API allows querying devices via a GET request, but you don't know the secret ID.
+- **Normal Request:** `GET /api/data?deviceId=rpi-01`
+
+### 2. Vulnerability Exploitation
+The backend likely uses a query format like `db.collection.find({ deviceId: req.query.deviceId })`. If the input is not strictly cast to a string, Express.js will parse nested query parameters into JavaScript objects.
+
+- **Action:** Inject a MongoDB operator. We want to tell the database: "Give me data for any device where the ID is *NOT EQUAL* to `rpi-01`."
+- **Payload:** `GET /api/data?deviceId[$ne]=rpi-01`
+
+### 3. The Attack
+- The server will process `{ deviceId: { $ne: "rpi-01" } }` and return an array containing the hidden device's telemetry (e.g., `secret-sensor-99`).
+- **Action:** Using your script from Part A, flood the server with critical temperature data targeted specifically at `secret-sensor-99`.
+
+---
+
+## 🔵 Blue Team Instructions (Defense)
+
+### 1. Detection
+- **Action:** Review the server's HTTP access logs.
+- **Indicator of Compromise (IoC):** Look for URL-encoded brackets in the request path: `%5B%24ne%5D` (which decodes to `[$ne]`).
+
+### 2. Mitigation Strategy
+The vulnerability exists because we lacked **Input Sanitization** and **Type Validation**.
+
+- **Action:** Update the `/api/data` GET route in `server/index.js` to explicitly cast the input or use a validation library like `Joi`.
+
+**Code Patch (Basic Remediation):**
+```javascript
+// Force the input to be a primitive string, preventing Object injection
+const queriedId = String(req.query.deviceId);
+
+// Or better, validate explicitly:
+if (typeof req.query.deviceId !== 'string') {
+    return res.status(400).json({ error: "Invalid Parameter Type" });
+}
+
+db.collection.find({ deviceId: queriedId });
+```
+
+### 3. Advanced Defense (Purple Team)
+Consider using packages like `express-mongo-sanitize` globally across your application to recursively check `req.body` and `req.query` for keys beginning with `$` or `.`.
