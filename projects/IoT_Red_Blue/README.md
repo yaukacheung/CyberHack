@@ -14,6 +14,15 @@ This project simulates a vulnerable IoT environment for educational purposes. It
 
 ## Setup & Running
 
+### Automated Setup (Recommended)
+To drastically reduce deployment time, execute the unified setup script from the root directory. This script will verify your environment prerequisites, configure your environment variables (`.env`), and recursively install all necessary Node.js dependencies across the microservices.
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+### Manual Setup
+
 ### 1. Start the Database
 Make sure your local MongoDB instance is running:
 ```bash
