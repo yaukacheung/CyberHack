@@ -8,9 +8,6 @@ Cyber_Security_Textbook.md
 # Ignore sensitive files (hypothetically)
 .env
 
-# Ignore scripts
-*.py
-*.sh
-scripts/
-projects/*/scripts/
-projects/*/setup.sh
+# Ignore content generation/editing scripts
+format_textbook.py
+scripts/generate_pdf.js
