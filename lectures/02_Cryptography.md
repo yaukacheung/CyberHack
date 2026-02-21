@@ -11,7 +11,7 @@
 
 ---
 
-## Level 1: Fundamentals
+## Section 1
 **Goal:** Recognize and break historical ciphers.
 
 ### 1.1 Symmetric vs Asymmetric
@@ -37,7 +37,7 @@
 
 ---
 
-## Level 2: Intermediate
+## Section 2
 **Goal:** Master the XOR operator and modern symmetric standards.
 
 ### 2.1 The Magic of XOR ($\oplus$)
@@ -61,7 +61,7 @@
 
 ---
 
-## Level 3: Advanced
+## Section 3
 **Goal:** Attack RSA and understand hashing security.
 
 ### 3.1 RSA & Prime Factoring
@@ -85,7 +85,7 @@ Hashes (MD5, SHA256) are one-way. You can't "decrypt" them, you can only "crack"
 
 ---
 
-## 🎓 Academic Connection & Competition
+## Academic Connection & Competition
 - **Textbook Correlation**: This chapter corresponds to **Chapter 2** of the [Consolidated Textbook](file:///Users/yoga/Documents/WorkDesk/CyberHack/Cyber_Security_Textbook.pdf).
 - **Practical Application**: Hashing and Salts are used in the [IoT Project's Admin Panel](file:///Users/yoga/Documents/WorkDesk/CyberHack/projects/IoT_Red_Blue/server/index.js) to secure credentials.
 - **Competition Note**: In Round 2 (Defense), your task is to ensure all user passwords are properly salted and hashed.

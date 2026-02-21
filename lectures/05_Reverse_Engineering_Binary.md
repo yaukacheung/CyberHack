@@ -10,7 +10,7 @@
 
 ---
 
-## Level 1: Fundamentals
+## Section 1
 **Goal:** Understand the basics of binary files and assembly.
 
 ### 1.1 CPU Registers 101 (x86)
@@ -36,7 +36,7 @@ If a program says `if (authenticated == 0) exit();`, we can change the assembly 
 
 ---
 
-## Level 2: Intermediate
+## Section 2
 **Goal:** Master Ghidra and understand the Stack Frame.
 
 ### 2.1 The Stack Frame
@@ -59,7 +59,7 @@ Every function call creates a "Frame" on the stack.
 
 ---
 
-## Level 3: Advanced
+## Section 3
 **Goal:** Control execution flow via Buffer Overflow.
 
 ### 3.1 Exploiting the Stack (Pwn)
@@ -89,7 +89,7 @@ Every function call creates a "Frame" on the stack.
 
 ---
 
-## 🎓 Academic Connection & Competition
+## Academic Connection & Competition
 - **Textbook Correlation**: This chapter corresponds to **Chapter 5** of the [Consolidated Textbook](file:///Users/yoga/Documents/WorkDesk/CyberHack/Cyber_Security_Textbook.pdf).
 - **Practical Application**: The stack overflow concepts here are the foundation for more advanced IoT exploits (though the current project focuses on high-level API vulnerabilities).
 - **Competition Note**: While not a direct task in the current IoT lab, patching binary vulnerabilities is a key skill for future Attack-Defense CTFs.

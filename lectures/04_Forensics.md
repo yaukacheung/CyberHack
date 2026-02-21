@@ -10,7 +10,7 @@
 
 ---
 
-## Level 1: Fundamentals
+## Section 1
 **Goal:** Extract visible text and identify file types correctly.
 
 ### 1.1 The `file` Command (First Step)
@@ -33,7 +33,7 @@ Never trust a file extension. A `.txt` might be a `.pdf` in disguise.
 
 ---
 
-## Level 2: Intermediate
+## Section 2
 **Goal:** Analyze file structures and use Steganography tools.
 
 ### 2.1 Binwalk & Foremost
@@ -53,7 +53,7 @@ Images are made of pixels. Each pixel has RGB values (e.g., 255, 255, 255). Chan
 
 ---
 
-## Level 3: Advanced
+## Section 3
 **Goal:** Network analysis and Memory forensics.
 
 ### 3.1 Network Forensics (Wireshark)
@@ -80,7 +80,7 @@ Images are made of pixels. Each pixel has RGB values (e.g., 255, 255, 255). Chan
 
 ---
 
-## 🎓 Academic Connection & Competition
+## Academic Connection & Competition
 - **Textbook Correlation**: This chapter corresponds to **Chapter 4** and **Chapter 10 (Operations)** of the [Consolidated Textbook](file:///Users/yoga/Documents/WorkDesk/CyberHack/Cyber_Security_Textbook.pdf).
 - **Practical Application**: Network forensics is key to identifying the "Invisible Attacker" in the [IoT Project](file:///Users/yoga/Documents/WorkDesk/CyberHack/projects/IoT_Red_Blue/docs/Part_E_Guide.md).
 - **Competition Note**: Use Wireshark filters learned here to identify the Red Team's IP address and score 10 points.

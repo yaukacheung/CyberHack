@@ -11,7 +11,7 @@
 
 ---
 
-## Level 1: Fundamentals
+## Section 1
 **Goal:** Gather information without triggering alerts on the target.
 
 ### 1.1 Passive Recon & OSINT
@@ -34,7 +34,7 @@
 
 ---
 
-## Level 2: Intermediate
+## Section 2
 **Goal:** Map the network and detect services using Nmap.
 
 ### 2.1 The Nmap Flag Table
@@ -61,7 +61,7 @@
 
 ---
 
-## Level 3: Advanced
+## Section 3
 **Goal:** Establish Command & Control and transfer files with Netcat.
 
 ### 3.1 Netcat File Transfers
@@ -94,7 +94,7 @@ Netcat isn't just for shells; it's a fast way to move data.
 
 ---
 
-## 🎓 Academic Connection & Competition
+## Academic Connection & Competition
 - **Textbook Correlation**: This chapter corresponds to **Chapter 6** and **Chapter 8 (Foundations)** of the [Consolidated Textbook](file:///Users/yoga/Documents/WorkDesk/CyberHack/Cyber_Security_Textbook.pdf).
 - **Practical Application**: The real-time monitoring and IP isolation tools in the [IoT Blue Dashboard](file:///Users/yoga/Documents/WorkDesk/CyberHack/projects/IoT_Red_Blue/docs/Part_E_Guide.md) are critical for securing connected devices.
 - **Competition Note**: Successfully isolating the Red Team's IP via the dashboard scores 15 points.

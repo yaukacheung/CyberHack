@@ -15,7 +15,7 @@
 
 ---
 
-## Level 1: Fundamentals
+## Section 1
 **Goal:** Understand the environment and navigate the command line.
 
 ### 1.1 The Command Line Interface (CLI)
@@ -50,7 +50,7 @@ Hacking is rarely done with a mouse. You must master the keyboard.
 
 ---
 
-## Level 2: Intermediate
+## Section 2
 **Goal:** Set up a hacking lab and connect to remote systems.
 
 ### 2.1 Virtualization
@@ -73,7 +73,7 @@ Never hack from your host OS. Use a **Virtual Machine (VM)** like Kali Linux.
 
 ---
 
-## Level 3: Advanced
+## Section 3
 **Goal:** Automate tasks and understand the legal nuances.
 
 ### 3.1 Scripting Basics
@@ -96,7 +96,7 @@ Never hack from your host OS. Use a **Virtual Machine (VM)** like Kali Linux.
 
 ---
 
-## 🎓 Academic Connection & Competition
+## Academic Connection & Competition
 - **Textbook Correlation**: This chapter corresponds to **Chapter 1** and **Chapter 7 (Basics)** of the [Consolidated Textbook](file:///Users/yoga/Documents/WorkDesk/CyberHack/Cyber_Security_Textbook.pdf).
 - **Practical Application**: The basic CLI navigation skills learned here are essential for the [IoT Red vs Blue Project](file:///Users/yoga/Documents/WorkDesk/CyberHack/projects/IoT_Red_Blue/docs/curriculum.md).
 - **Competition Note**: In Round 1, use these commands to discover the target API server IP.
