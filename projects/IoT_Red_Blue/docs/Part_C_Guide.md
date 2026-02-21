@@ -8,7 +8,7 @@ The IoT backend features an administration panel protected by a native login sys
 
 ---
 
-## 🔴 Red Team Instructions (Offense)
+##  Red Team Instructions (Offense)
 
 ### 1. Reconnaissance
 - **Action:** Identify the authentication endpoint. Use the browser's Network Tab to monitor a failed login attempt.
@@ -41,7 +41,7 @@ You receive a `200 OK` HTTP status code and an authentication token (JWT or Sess
 
 ---
 
-## 🔵 Blue Team Instructions (Defense)
+##  Blue Team Instructions (Defense)
 
 ### 1. Detection
 - **Action:** Open your SIEM or check the `server.log`.

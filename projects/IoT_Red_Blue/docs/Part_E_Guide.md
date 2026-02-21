@@ -8,7 +8,7 @@ The IoT ecosystem includes a React-based **Blue Team Dashboard** acting as a rud
 
 ---
 
-## 🔴 Red Team Instructions (The Distraction)
+##  Red Team Instructions (The Distraction)
 
 ### 1. The Smokescreen Attack
 Launch multiple attacks simultaneously to overwhelm the Blue Team's cognitive load.
@@ -21,7 +21,7 @@ Try spoofing data at an incredibly slow interval (e.g., once every 3 minutes) in
 
 ---
 
-## 🔵 Blue Team Instructions (Defense & Response)
+##  Blue Team Instructions (Defense & Response)
 
 ### 1. Active Monitoring
 - **Action:** Open Chromium and navigate to `http://localhost:3001`. Monitor the live charts and the **Security Logs** panel.

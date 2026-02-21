@@ -4,7 +4,7 @@ This guide details the operational roles, methodologies, and objectives in profe
 
 ---
 
-## 🔴 The Red Team (Offense Operations)
+##  The Red Team (Offense Operations)
 
 The Red Team operates as the adversary (e.g., mimicking an Advanced Persistent Threat or a ransomware syndicate). Their objective is to proactively identify and weaponize vulnerabilities to rigorously test the effectiveness of an organization's security posture, detection capabilities, and response times.
 
@@ -21,7 +21,7 @@ The Red Team operates as the adversary (e.g., mimicking an Advanced Persistent T
 
 ---
 
-## 🔵 The Blue Team (Defense Operations)
+##  The Blue Team (Defense Operations)
 
 The Blue Team is the organization's internal security apparatus. Their continuous objective is to architect resilient systems, monitor network traffic, detect anomalies, and decisively respond to active security incidents. 
 
@@ -38,7 +38,7 @@ The Blue Team is the organization's internal security apparatus. Their continuou
 
 ---
 
-## 🤝 Purple Teaming (Collaborative Security)
+##  Purple Teaming (Collaborative Security)
 
 "Purple Teaming" is not typically a distinct, separate personnel group. It is a highly collaborative, iterative methodology where the Red and Blue teams work together transparently to maximize efficiency and learning.
 

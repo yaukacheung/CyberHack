@@ -1,9 +1,9 @@
 # IoT Red vs Blue: Competition Scorecard
 
 **Team Name:** ____________________  
-**Initial Role:** [🔴 Red / 🔵 Blue]
+**Initial Role:** [ Red /  Blue]
 
-## 🔴 Red Team Round
+##  Red Team Round
 Use this table to track your progress as Attackers.
 
 | Task | Proof (Flag or Screenshot) | Points | Verified |
@@ -18,7 +18,7 @@ Use this table to track your progress as Attackers.
 
 ---
 
-## 🔵 Blue Team Round
+##  Blue Team Round
 Use this table to track your progress as Defenders.
 
 | Task | Proof (Code or Log Screenshot) | Points | Verified |
@@ -33,4 +33,4 @@ Use this table to track your progress as Defenders.
 
 ---
 
-## 🏁 Final Score: ________ / 180
+##  Final Score: ________ / 180

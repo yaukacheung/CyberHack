@@ -4,7 +4,7 @@ This manual is designed to transition you from theory to professional-grade expl
 
 ---
 
-## 🔐 01. Cryptography: The Science of Secrets
+##  01. Cryptography: The Science of Secrets
 
 ### Phase A: Discovery (Recon)
 1.  **Identify the Format**: Before attacking, use `Cipher Identifier` tools or look for visual patterns.
@@ -28,7 +28,7 @@ This manual is designed to transition you from theory to professional-grade expl
 
 ---
 
-## 🌐 02. Web Exploitation: Breaking the Browser
+##  02. Web Exploitation: Breaking the Browser
 
 ### Phase A: Setup & Tools
 *   **Proxy Everything**: Set up **Burp Suite**. Configure your browser to send all traffic through the "Intercepter".
@@ -47,7 +47,7 @@ This manual is designed to transition you from theory to professional-grade expl
 
 ---
 
-## 🔍 03. Forensics: Digital Archaeology
+##  03. Forensics: Digital Archaeology
 
 ### Phase A: The 10-Second Recon
 1.  `file important_data`: Determine the true type.
@@ -67,7 +67,7 @@ This manual is designed to transition you from theory to professional-grade expl
 
 ---
 
-## ⚙️ 04. RevEng & Pwn: Software Deconstruction
+##  04. RevEng & Pwn: Software Deconstruction
 
 ### Phase A: Static Analysis (Ghidra)
 1.  **Analyze the Binary**: Look for the `main` or `entry` function.
@@ -87,7 +87,7 @@ This manual is designed to transition you from theory to professional-grade expl
 
 ---
 
-## 📡 05. Networking & Recon: Mapping the Matrix
+##  05. Networking & Recon: Mapping the Matrix
 
 ### Phase A: Setup & Tools
 *   **The Scanner**: Install `Nmap`. 
@@ -107,7 +107,7 @@ This manual is designed to transition you from theory to professional-grade expl
 
 ---
 
-## 📡 06. IoT Intrusion & Defense: The Connected Threat
+##  06. IoT Intrusion & Defense: The Connected Threat
 
 ### Phase A: Discovery
 1.  **Network Mapping**:
@@ -132,6 +132,6 @@ This manual is designed to transition you from theory to professional-grade expl
 
 ---
 
-## 🏆 Final Challenge: The Combined Mission
+##  Final Challenge: The Combined Mission
 **Scenario**: You are given a password-protected ZIP file (`Forensics`). Inside is an encoded text file (`Crypto`). The key to the ZIP is hidden in an IDOR vulnerability on a mock website (`Web`).
 **Task**: Map out the steps you would take to solve this multi-stage challenge.

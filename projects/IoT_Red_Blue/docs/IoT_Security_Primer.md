@@ -4,7 +4,7 @@ This primer provides the supporting theoretical and technical knowledge required
 
 ---
 
-## 🏗️ 1. IoT Communication Architecture & Protocols
+##  1. IoT Communication Architecture & Protocols
 
 Unlike traditional web-browsers, IoT devices are heavily power-constrained and operate over unpredictable networks. They utilize lightweight protocols, which frequently trade security for performance.
 
@@ -14,7 +14,7 @@ Unlike traditional web-browsers, IoT devices are heavily power-constrained and o
 
 ---
 
-## 🚨 2. The Threat Landscape (OWASP IoT Top 10)
+##  2. The Threat Landscape (OWASP IoT Top 10)
 
 The Open Worldwide Application Security Project (OWASP) maintains a list of the most critical IoT vulnerabilities. This capstone project simulates several of these:
 
@@ -26,7 +26,7 @@ The Open Worldwide Application Security Project (OWASP) maintains a list of the 
 
 ---
 
-## 💉 3. Advanced Injection & Manipulation
+##  3. Advanced Injection & Manipulation
 
 ### Data Spoofing (Broken Access Control)
 Spoofing occurs when an adversary transmits malicious telemetry that masquerades as legitimate data from a trusted node.
@@ -41,7 +41,7 @@ In document-based databases (like MongoDB), if an application passes unsanitized
 
 ---
 
-## 🔌 4. Hardware Security Fundamentals
+##  4. Hardware Security Fundamentals
 
 While this capstone focuses on network and application security, physical hardware vulnerabilities are critical in the IoT domain:
 

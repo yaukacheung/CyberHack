@@ -4,7 +4,7 @@ Welcome to the **IoT Intrusion & Defense Capstone Project**. This intensive prog
 
 ---
 
-## 🧭 The Learning Path
+##  The Learning Path
 
 ### [Phase A: Traffic Spoofing (Broken Access Control)](Part_A_Guide.md)
 Discover the network architecture and simulate an attacker injecting falsified, critical telemetry into an unauthenticated API endpoint. Learn how to implement cryptographic API key validation.
@@ -26,7 +26,7 @@ Transition from guided labs to independent engineering. Extend the ecosystem's h
 
 ---
 
-## 🏆 Competition Execution Mode
+##  Competition Execution Mode
 Ready to test your skills in a live-fire environment? Follow the **[Competition Guide](Competition_Guide.md)** to engage in an officially timed, multi-stage Red vs Blue exercise. 
 - **The Teams**: Participants are split into 2 dedicated groups (Offense and Defense).
 - **The Scoring System**: Points are awarded dynamically—Red earns points for verifiable exploitation flags; Blue earns points for verified patching and uptime.
@@ -34,7 +34,7 @@ Ready to test your skills in a live-fire environment? Follow the **[Competition 
 
 ---
 
-## 🛠️ Environment Setup & Initialization
+##  Environment Setup & Initialization
 
 1.  **Dependencies**: Execute `npm run install:all` in the repository root to populate all required Node modules.
 2.  **Configuration**: Duplicate the `.env.example` file to create a localized `.env`.

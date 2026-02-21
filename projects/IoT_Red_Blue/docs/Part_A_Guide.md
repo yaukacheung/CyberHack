@@ -8,7 +8,7 @@ A sensor node (`rpi-01`) is continuously sending temperature data to the central
 
 ---
 
-## 🔴 Red Team Instructions (Offense)
+##  Red Team Instructions (Offense)
 
 ### 1. Reconnaissance
 Before attacking, you must understand the normal baseline.
@@ -33,7 +33,7 @@ The database registers the 150-degree reading, and the Blue Team Dashboard trigg
 
 ---
 
-## 🔵 Blue Team Instructions (Defense)
+##  Blue Team Instructions (Defense)
 
 ### 1. Detection
 - **Action:** Monitor the incoming logs in your terminal or SIEM dashboard. 

@@ -8,7 +8,7 @@ IoT servers often possess constrained computational resources and database conne
 
 ---
 
-## 🔴 Red Team Instructions (Offense)
+##  Red Team Instructions (Offense)
 
 ### 1. Reconnaissance
 - **Action:** Observe the legitimate traffic from `rpi_simulator/sensor.js`.
@@ -49,7 +49,7 @@ Run the flood script.
 
 ---
 
-## 🔵 Blue Team Instructions (Defense)
+##  Blue Team Instructions (Defense)
 
 ### 1. Detection
 - **Action:** Utilize a monitoring tool (like the automated `monitor.js` or a rudimentary `htop` command on the server).

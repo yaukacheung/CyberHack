@@ -8,7 +8,7 @@ There is a "High Value" device hidden in the database collection. Its ID is NOT 
 
 ---
 
-## 🔴 Red Team Instructions (The Hunt)
+##  Red Team Instructions (The Hunt)
 
 ### 1. Reconnaissance
 You know the API allows querying devices via a GET request, but you don't know the secret ID.
@@ -26,7 +26,7 @@ The backend likely uses a query format like `db.collection.find({ deviceId: req.
 
 ---
 
-## 🔵 Blue Team Instructions (Defense)
+##  Blue Team Instructions (Defense)
 
 ### 1. Detection
 - **Action:** Review the server's HTTP access logs.

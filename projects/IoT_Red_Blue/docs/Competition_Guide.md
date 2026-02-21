@@ -2,17 +2,17 @@
 
 This guide outlines the rules, scoring, and workflow for the **Cyber Hack IoT Competition**. Students will work in teams of two, switching between offensive (Red) and defensive (Blue) roles.
 
-## 🏁 Objective
+##  Objective
 Accumulate the highest score by successfully executing attacks (Red) and professionally securing the system (Blue).
 
-## 🕒 Competition Format
+##  Competition Format
 - **Round 1 (45 mins):** Team A (Red) vs Team B (Blue).
 - **Intermission (10 mins):** Review and Reset.
 - **Round 2 (45 mins):** Team B (Red) vs Team A (Blue).
 
 ---
 
-## 🔴 Red Team (Attackers)
+##  Red Team (Attackers)
 Your goal is to compromise the IoT ecosystem using the vulnerabilities identified in Phases A-D.
 
 | Task ID | Description | Points | Verification |
@@ -26,7 +26,7 @@ Your goal is to compromise the IoT ecosystem using the vulnerabilities identifie
 
 ---
 
-## 🔵 Blue Team (Defenders)
+##  Blue Team (Defenders)
 Your goal is to use the Dashboard and source code to identify and stop the Red Team.
 
 | Task ID | Description | Points | Verification |
@@ -40,12 +40,12 @@ Your goal is to use the Dashboard and source code to identify and stop the Red T
 
 ---
 
-## 🏆 Scoring & Submission
+##  Scoring & Submission
 1.  **Submission**: Each team must maintain a **Scorecard.md** documenting their success with screenshots or command logs.
 2.  **Verification**: The Instructor (or opposing team) must sign off on each achievement.
 3.  **Bonus**: 10 bonus points for the most professional "Incident Report" written during the intermission.
 
-## ⚠️ Rules of Engagement
+##  Rules of Engagement
 - Do not attack infrastructure outside of the `localhost` network.
 - Do not use automated tools that could damage the host OS.
 - All attacks must be documented to count for points.

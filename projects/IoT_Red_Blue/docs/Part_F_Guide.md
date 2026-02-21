@@ -8,7 +8,7 @@ The goal of this final stage is to transition from following guided scenarios to
 
 ---
 
-## 🏗️ 1. Adding New Hardware (Extension)
+##  1. Adding New Hardware (Extension)
 The system currently tracks `temp` (temperature). You will extend the schema to simultaneously track `humidity` and `voltage`.
 
 ### Step 1: Update the Simulator Model
@@ -28,7 +28,7 @@ In `server/models/Reading.js` (if strictly typed) or within the `server/index.js
 
 ---
 
-## 🔴 2. Creating Custom Attacks (Purple Teaming)
+##  2. Creating Custom Attacks (Purple Teaming)
 Modify `rpi_simulator/malicious_node.js` to simulate complex threats beyond simple floods.
 
 - **Data Manipulation (Oscillating Attack):** Instead of static high numbers, write a script that sends values oscillating *just below* the Blue Team's alarm threshold (e.g., if the alarm is > 50°C, send 49.5, 49.8, 49.2). This tests if the defense can detect subtle anomalies over time.
@@ -36,14 +36,14 @@ Modify `rpi_simulator/malicious_node.js` to simulate complex threats beyond simp
 
 ---
 
-## 🔵 3. Dashboard Customization
+##  3. Dashboard Customization
 The Blue Team Dashboard is built with React and heavily relies on visual cues. 
 - **New Visualization:** Add a new `LineChart` component in `client/src/app` to track the newly added `voltage` data.
 - **CSS Threat Indicators:** Modify the global CSS so that if the new `voltage` drops below `210V`, the entire dashboard border turns yellow, indicating a potential "Brownout DoS" attack on the hardware.
 
 ---
 
-## 🛡️ 4. Hardening the Defense
+##  4. Hardening the Defense
 Implement professional-grade mitigations referencing Chapter 10 of your textbook:
 
 - **Strict Schema Enforcement:** Use a library like `Zod` or `Joi` in Express.js. Reject *any* POST request that includes fields not explicitly defined in your schema, mitigating Prototype Pollution and NoSQL injection.
