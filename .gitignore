@@ -7,3 +7,10 @@ Cyber_Security_Textbook.md
 
 # Ignore sensitive files (hypothetically)
 .env
+
+# Ignore scripts
+*.py
+*.sh
+scripts/
+projects/*/scripts/
+projects/*/setup.sh
